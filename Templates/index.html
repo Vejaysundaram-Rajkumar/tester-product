@@ -6,27 +6,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Form</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .section {
+            display: none;
+        }
+        .visible {
+            display: block;
+        }
+        .role-container {
+            margin-bottom: 20px;
+        }
+        .goal-container {
+            margin-left: 20px;
+        }
+        .goal-input {
+            display: none;
+            margin-left: 20px;
+        }
+    </style>
+    <script>
+        function toggleSection(sectionId) {
+            document.getElementById('details-section').classList.remove('visible');
+            document.getElementById('goals-section').classList.remove('visible');
+            document.getElementById(sectionId).classList.add('visible');
+        }
+
+        function toggleInputs(checkbox, role, goal) {
+            var inputs = document.getElementById(role + '_' + goal + '_inputs');
+            if (checkbox.checked) {
+                inputs.style.display = 'block';
+            } else {
+                inputs.style.display = 'none';
+            }
+        }
+    </script>
 </head>
-<body>
+<body onload="toggleSection('{{ 'goals-section' if step == 'goals' else 'details-section' }}')">
     <div class="form-container">
-        <h2>Enter Company Details</h2>
         <form method="POST">
-            <label for="company_name">Company Name:</label>
-            <input type="text" id="company_name" name="company_name" required>
-            
-            <label for="market_value">Market Value:</label>
-            <input type="text" id="market_value" name="market_value" required>
-            
-            <label for="location">Location:</label>
-            <input type="text" id="location" name="location" required>
-            
-            <label for="founder_name">Founder Name:</label>
-            <input type="text" id="founder_name" name="founder_name" required>
-            
-            <label for="business_type">Type of Business:</label>
-            <input type="text" id="business_type" name="business_type" required>
-            
-            <button type="submit">Submit</button>
+            <!-- Basic Details Section -->
+            <div id="details-section" class="section">
+                <h2>Enter Company Details</h2>
+                <label for="company_name">Company Name:</label>
+                <input type="text" id="company_name" name="company_name" required value="{{ company_name if step == 'goals' else '' }}">
+                
+                <label for="market_value">Market Value:</label>
+                <input type="text" id="market_value" name="market_value" required value="{{ market_value if step == 'goals' else '' }}">
+                
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" required value="{{ location if step == 'goals' else '' }}">
+                
+                <label for="founder_name">Founder Name:</label>
+                <input type="text" id="founder_name" name="founder_name" required value="{{ founder_name if step == 'goals' else '' }}">
+                
+                <label for="business_type">Type of Business:</label>
+                <input type="text" id="business_type" name="business_type" required value="{{ business_type if step == 'goals' else '' }}">
+                
+                <button type="button" onclick="toggleSection('goals-section')">Next</button>
+            </div>
+
+            <!-- Goals Section -->
+            <div id="goals-section" class="section">
+                <h2>Select Company Goals</h2>
+                {% for role, goals in roles_and_goals.items() %}
+                    <div class="role-container">
+                        <h3>{{ role }}</h3>
+                        {% for goal in goals %}
+                            <div class="goal-container">
+                                <input type="checkbox" id="{{ role }}_{{ goal }}" name="{{ role }}_{{ goal }}" onchange="toggleInputs(this, '{{ role }}', '{{ goal }}')">
+                                <label for="{{ role }}_{{ goal }}">{{ goal }}</label>
+                                <div id="{{ role }}_{{ goal }}_inputs" class="goal-input">
+                                    <label for="{{ role }}_{{ goal }}_target">Target Value:</label>
+                                    <input type="text" id="{{ role }}_{{ goal }}_target" name="{{ role }}_{{ goal }}_target">
+                                    <label for="{{ role }}_{{ goal }}_actual">Actual Value:</label>
+                                    <input type="text" id="{{ role }}_{{ goal }}_actual" name="{{ role }}_{{ goal }}_actual">
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                <button type="submit" name="submit_goals">Submit</button>
+            </div>
         </form>
     </div>
 </body>
