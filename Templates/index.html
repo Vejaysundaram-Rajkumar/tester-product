@@ -1,0 +1,33 @@
+<!-- templates/form.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Form</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Enter Company Details</h2>
+        <form method="POST">
+            <label for="company_name">Company Name:</label>
+            <input type="text" id="company_name" name="company_name" required>
+            
+            <label for="market_value">Market Value:</label>
+            <input type="text" id="market_value" name="market_value" required>
+            
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" required>
+            
+            <label for="founder_name">Founder Name:</label>
+            <input type="text" id="founder_name" name="founder_name" required>
+            
+            <label for="business_type">Type of Business:</label>
+            <input type="text" id="business_type" name="business_type" required>
+            
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
