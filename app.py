@@ -18,14 +18,12 @@ categories_and_metrics = {
 @app.route('/', methods=['GET', 'POST'])
 def company_form():
     if request.method == 'POST':
-        # Process basic company details
         company_name = request.form.get('company_name')
         market_value = request.form.get('market_value')
         location = request.form.get('location')
         founder_name = request.form.get('founder_name')
         business_type = request.form.get('business_type')
 
-        # Check if we are processing goals (second step)
         if 'submit_goals' in request.form:
             selected_metrics = {}
             selected_metrics_count = 0
@@ -39,7 +37,7 @@ def company_form():
                         try:
                             gap = abs(float(target_value) - float(actual_value))
                         except ValueError:
-                            gap = 'N/A'  # In case of non-numeric input
+                            gap = 'N/A'
                         selected_metrics[metric] = {'target': target_value, 'actual': actual_value, 'gap': gap}
                         selected_metrics_count += 1
                         if selected_metrics_count >= 10:
@@ -47,12 +45,10 @@ def company_form():
                 if selected_metrics_count >= 10:
                     break
 
-            # Render the results page with company details and gap analysis
             return render_template('results.html', company_name=company_name, market_value=market_value,
                                    location=location, founder_name=founder_name, business_type=business_type,
                                    selected_metrics=selected_metrics)
 
-        # Proceed to display goals section
         return render_template('index.html', step='goals', company_name=company_name, market_value=market_value,
                                location=location, founder_name=founder_name, business_type=business_type,
                                categories_and_metrics=categories_and_metrics)
