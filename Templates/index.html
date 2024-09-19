@@ -52,12 +52,20 @@
             text-align: center;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
 
         .category-box:hover {
             background-color: #b2ebf2;
+        }
+
+        /* Active/Selected Category Style */
+        .category-box.selected {
+            background-color: #00796b;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
 
         /* Metrics Section (Bottom Left) */
@@ -88,12 +96,20 @@
             border-radius: 5px;
             text-align: center;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
 
         .goal-container:hover {
             background-color: #b2ebf2;
+        }
+
+        /* Active/Selected Metric Style */
+        .goal-container.selected {
+            background-color: #00796b;
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
 
         /* Right side (Selected metrics) */
@@ -176,48 +192,82 @@
         function showMetrics(category) {
             const metricGrid = document.getElementById('metric-grid');
             const placeholderMessage = document.getElementById('placeholder-message');
-            metricGrid.innerHTML = ''; // Clear existing metrics
-            placeholderMessage.style.display = 'none'; // Hide placeholder message
+            const categories = document.querySelectorAll('.category-box');
+
+            // Clear previous selection
+            categories.forEach(cat => cat.classList.remove('selected'));
+
+            // Highlight selected category
+            const selectedCategoryBox = document.querySelector(`[onclick="showMetrics('${category}')"]`);
+            selectedCategoryBox.classList.add('selected');
+
+            // Clear existing metrics
+            metricGrid.innerHTML = ''; 
+            placeholderMessage.style.display = 'none';
 
             // Fetch the metrics for the selected category from a hidden data field (or passed via Flask)
             const metrics = document.getElementById(category + '_metrics').value.split(',');
 
-            // Display metrics for the selected category
+            // Display metrics for the selected category and update visual selection based on the right list
             metrics.forEach((metric) => {
                 const metricElement = document.createElement('div');
                 metricElement.classList.add('goal-container');
                 metricElement.textContent = metric;
-                metricElement.onclick = () => selectMetric(metric);
+
+                // Check if the metric is already selected
+                if (selectedMetrics.includes(metric)) {
+                    metricElement.classList.add('selected');
+                }
+
+                metricElement.onclick = () => toggleMetricSelection(metricElement, metric);
                 metricGrid.appendChild(metricElement);
             });
         }
 
-        function selectMetric(metric) {
-            if (selectedMetricsCount >= maxMetrics) {
-                alert("You can select a maximum of " + maxMetrics + " metrics.");
-                return;
-            }
-
-            if (!selectedMetrics.includes(metric)) {
-                selectedMetrics.push(metric);
-                selectedMetricsCount++;
-                addSelectedMetric(metric);
-                updateSubmitButtonState();
+        function toggleMetricSelection(metricElement, metric) {
+            if (selectedMetrics.includes(metric)) {
+                removeMetric(metric, metricElement);
+            } else {
+                if (selectedMetricsCount >= maxMetrics) {
+                    alert("You can select a maximum of " + maxMetrics + " metrics.");
+                    return;
+                }
+                addMetric(metric, metricElement);
             }
         }
 
-        function addSelectedMetric(metric) {
+        function addMetric(metric, metricElement) {
+            metricElement.classList.add('selected');
+            selectedMetrics.push(metric);
+            selectedMetricsCount++;
+            addSelectedMetricToRightList(metric);
+            updateSubmitButtonState();
+        }
+
+        function removeMetric(metric, metricElement) {
+            metricElement.classList.remove('selected');
+            const metricItem = document.querySelector(`.selected-metric-item[data-metric='${metric}']`);
+            if (metricItem) {
+                metricItem.remove();
+            }
+            selectedMetrics = selectedMetrics.filter(m => m !== metric);
+            selectedMetricsCount--;
+            updateSubmitButtonState();
+        }
+
+        function addSelectedMetricToRightList(metric) {
             const selectedMetricsList = document.getElementById('selected-metrics-list');
 
             const metricItem = document.createElement('li');
             metricItem.classList.add('selected-metric-item');
             metricItem.draggable = true;
             metricItem.textContent = metric;
+            metricItem.setAttribute('data-metric', metric);  // Add data attribute to help in selection/deselection
 
             const deleteBtn = document.createElement('button');
             deleteBtn.classList.add('delete-btn');
             deleteBtn.textContent = 'X';
-            deleteBtn.onclick = () => removeMetric(metric, metricItem);
+            deleteBtn.onclick = () => removeMetric(metric, document.querySelector(`.goal-container:contains('${metric}')`));
 
             metricItem.appendChild(deleteBtn);
             selectedMetricsList.appendChild(metricItem);
@@ -242,13 +292,6 @@
                     selectedMetricsList.insertBefore(draggingItem, afterElement);
                 }
             });
-        }
-
-        function removeMetric(metric, metricItem) {
-            metricItem.remove();
-            selectedMetrics = selectedMetrics.filter(m => m !== metric);
-            selectedMetricsCount--;
-            updateSubmitButtonState();
         }
 
         function updateSubmitButtonState() {
@@ -281,6 +324,7 @@
     <div class="form-container">
         <!-- Left Side: Categories and Metrics -->
         <div class="left-side">
+            <h1>Parameters</h1>
             <div class="categories-grid">
                 <!-- Dynamically Generated Categories -->
                 {% for category, metrics in categories_and_metrics.items() %}
@@ -291,7 +335,7 @@
                     <input type="hidden" id="{{ category }}_metrics" value="{{ ','.join(metrics) }}">
                 {% endfor %}
             </div>
-
+            <h1>Metrics</h1>
             <div id="metrics-container" class="metrics-container">
                 <!-- Placeholder message or dynamically loaded metrics -->
                 <p id="placeholder-message">Here the metrics will be given according to the category that you select.</p>
