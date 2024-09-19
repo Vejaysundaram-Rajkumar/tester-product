@@ -1,93 +1,324 @@
-<!-- templates/form.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Form</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
-        .section {
-            display: none;
+        /* General layout styling */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f9;
         }
-        .visible {
-            display: block;
+
+        .form-container {
+            width: 90vw;
+            height: 90vh;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            overflow: hidden;
+            position: relative;
         }
-        .role-container {
+
+        /* Left side: Form content */
+        .form-content {
+            flex: 2;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .form-header {
+            font-size: 24px;
+            font-weight: bold;
             margin-bottom: 20px;
         }
-        .goal-container {
-            margin-left: 20px;
+
+        /* Categories */
+        .category-container {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
         }
-        .goal-input {
+
+        .category-header {
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-metrics {
             display: none;
-            margin-left: 20px;
+            padding-left: 20px;
+            margin-top: 10px;
         }
+
+        /* Flexbox layout for metrics */
+        .metric-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-width: 100%;
+        }
+
+        /* Goal container with 5 columns and visual feedback for selection */
+        .goal-container {
+            flex: 1 0 calc(20% - 10px); /* 5 metrics per row */
+            background-color: #e0f7fa;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            cursor: pointer; /* Make the entire box clickable */
+            position: relative;
+            transition: background-color 0.3s ease, border 0.3s ease;
+        }
+
+        /* Change background and border when selected */
+        .goal-container.selected {
+            background-color: #00796b;
+            color: white;
+            border: 2px solid #004d40;
+        }
+
+        .goal-container label {
+            margin-left: 10px;
+        }
+
+        .goal-container input[type="checkbox"] {
+            position: absolute;
+            opacity: 0; /* Hide the checkbox */
+        }
+
+        .goal-container:hover {
+            background-color: #b2ebf2;
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+
+        /* Selected Metrics Section */
+        .selected-metrics {
+            flex: 1;
+            background-color: #e3f2fd;
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 2px solid #90caf9;
+        }
+
+        .selected-metrics-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .selected-metric-item {
+            background-color: #bbdefb;
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Submit Button */
+        .submit-btn-container {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            text-align: right;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: #90caf9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: not-allowed;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+            transform: scale(0.9);
+        }
+
+        .submit-btn.enabled {
+            background-color: #1976d2;
+            cursor: pointer;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .submit-btn.enabled:hover {
+            background-color: #1565c0;
+            transform: scale(1.05);
+        }
+
     </style>
     <script>
-        function toggleSection(sectionId) {
-            document.getElementById('details-section').classList.remove('visible');
-            document.getElementById('goals-section').classList.remove('visible');
-            document.getElementById(sectionId).classList.add('visible');
+        var selectedMetrics = [];
+        var selectedMetricsCount = 0;
+        var maxMetrics = 10;
+
+        // Function to initialize pre-selected metrics
+        function initializeSelectedMetrics(preSelectedMetrics) {
+            preSelectedMetrics.forEach(metric => {
+                const checkbox = document.getElementById(metric);
+                const container = checkbox.closest('.goal-container');
+                
+                // Mark it as selected visually
+                checkbox.checked = true;
+                container.classList.add('selected');
+                
+                // Add it to the selected metrics list
+                addMetric(metric);
+                selectedMetricsCount++;
+            });
+            updateSubmitButtonState();
         }
 
-        function toggleInputs(checkbox, role, goal) {
-            var inputs = document.getElementById(role + '_' + goal + '_inputs');
+        // Toggle metrics under a category, closing others
+        function toggleMetrics(categoryId) {
+            const metricContainers = document.querySelectorAll('.category-metrics');
+            metricContainers.forEach(container => {
+                if (container.id !== categoryId + '_metrics') {
+                    container.style.display = 'none'; // Close all others
+                }
+            });
+
+            const metricsElement = document.getElementById(categoryId + '_metrics');
+            const isVisible = metricsElement.style.display === 'block';
+            metricsElement.style.display = isVisible ? 'none' : 'block';
+        }
+
+        // Handle the click event on the metric box to toggle checkbox
+        function toggleMetricBox(container, checkbox, category, metric) {
+            if (!checkbox.checked && selectedMetricsCount >= maxMetrics) {
+                alert("You can select a maximum of " + maxMetrics + " metrics.");
+                return; // Don't allow further selections if max is reached
+            }
+
+            checkbox.checked = !checkbox.checked; // Toggle checkbox state
+            toggleInputs(checkbox, category, metric); // Trigger the input handler
+
+            // Add or remove the 'selected' class for visual feedback
             if (checkbox.checked) {
-                inputs.style.display = 'block';
+                container.classList.add('selected');
             } else {
-                inputs.style.display = 'none';
+                container.classList.remove('selected');
             }
         }
+
+        // Toggle selection of metrics and update selected metrics display
+        function toggleInputs(checkbox, category, metric) {
+            if (checkbox.checked) {
+                if (!selectedMetrics.includes(metric)) { // Prevent duplicates
+                    addMetric(metric);
+                    selectedMetrics.push(metric);
+                    selectedMetricsCount++;
+                }
+            } else {
+                removeMetric(metric);
+                selectedMetrics = selectedMetrics.filter(m => m !== metric);
+                selectedMetricsCount--;
+            }
+
+            document.getElementById('metrics-selected').textContent = "Metrics selected: " + selectedMetricsCount + "/" + maxMetrics;
+            updateSubmitButtonState();
+        }
+
+        // Add metric to the selected metrics display
+        function addMetric(metric) {
+            const selectedContainer = document.getElementById('selected-metrics-list');
+            const newMetric = document.createElement('div');
+            newMetric.className = 'selected-metric-item';
+            newMetric.id = 'metric_' + metric;
+            newMetric.textContent = metric;
+            selectedContainer.appendChild(newMetric);
+        }
+
+        // Remove metric from the selected metrics display
+        function removeMetric(metric) {
+            const metricElement = document.getElementById('metric_' + metric);
+            if (metricElement) {
+                metricElement.remove();
+            }
+        }
+
+        // Enable or disable the submit button based on the number of selected metrics
+        function updateSubmitButtonState() {
+            const submitButton = document.getElementById('submit-btn');
+            if (selectedMetricsCount === maxMetrics) {
+                submitButton.classList.add('enabled');
+                submitButton.disabled = false;
+                submitButton.style.cursor = 'pointer';
+            } else {
+                submitButton.classList.remove('enabled');
+                submitButton.disabled = true;
+                submitButton.style.cursor = 'not-allowed';
+            }
+        }
+
+        // Initialize selected metrics after the page loads
+        window.onload = function() {
+            const preSelectedMetrics = ['category1_Metric 1-2', 'category2_Metric 2-3']; // Example of pre-selected metrics
+            initializeSelectedMetrics(preSelectedMetrics);
+        };
     </script>
 </head>
-<body onload="toggleSection('{{ 'goals-section' if step == 'goals' else 'details-section' }}')">
+<body>
     <div class="form-container">
-        <form method="POST">
-            <!-- Basic Details Section -->
-            <div id="details-section" class="section">
-                <h2>Enter Company Details</h2>
-                <label for="company_name">Company Name:</label>
-                <input type="text" id="company_name" name="company_name" required value="{{ company_name if step == 'goals' else '' }}">
-                
-                <label for="market_value">Market Value:</label>
-                <input type="text" id="market_value" name="market_value" required value="{{ market_value if step == 'goals' else '' }}">
-                
-                <label for="location">Location:</label>
-                <input type="text" id="location" name="location" required value="{{ location if step == 'goals' else '' }}">
-                
-                <label for="founder_name">Founder Name:</label>
-                <input type="text" id="founder_name" name="founder_name" required value="{{ founder_name if step == 'goals' else '' }}">
-                
-                <label for="business_type">Type of Business:</label>
-                <input type="text" id="business_type" name="business_type" required value="{{ business_type if step == 'goals' else '' }}">
-                
-                <button type="button" onclick="toggleSection('goals-section')">Next</button>
-            </div>
+        <!-- Left Side: Form Content -->
+        <div class="form-content">
+            <div class="form-header">Select Company Goals</div>
+            <div id="metrics-selected">Metrics selected: 0/10</div>
 
-            <!-- Goals Section -->
-            <div id="goals-section" class="section">
-                <h2>Select Company Goals</h2>
-                {% for role, goals in roles_and_goals.items() %}
-                    <div class="role-container">
-                        <h3>{{ role }}</h3>
-                        {% for goal in goals %}
-                            <div class="goal-container">
-                                <input type="checkbox" id="{{ role }}_{{ goal }}" name="{{ role }}_{{ goal }}" onchange="toggleInputs(this, '{{ role }}', '{{ goal }}')">
-                                <label for="{{ role }}_{{ goal }}">{{ goal }}</label>
-                                <div id="{{ role }}_{{ goal }}_inputs" class="goal-input">
-                                    <label for="{{ role }}_{{ goal }}_target">Target Value:</label>
-                                    <input type="text" id="{{ role }}_{{ goal }}_target" name="{{ role }}_{{ goal }}_target">
-                                    <label for="{{ role }}_{{ goal }}_actual">Actual Value:</label>
-                                    <input type="text" id="{{ role }}_{{ goal }}_actual" name="{{ role }}_{{ goal }}_actual">
-                                </div>
-                            </div>
-                        {% endfor %}
+            <!-- Dynamically Generated Categories and Metrics -->
+            {% for category, metrics in categories_and_metrics.items() %}
+                <div class="category-container">
+                    <div class="category-header" onclick="toggleMetrics('{{ category }}')">
+                        {{ category }} ▼
                     </div>
-                {% endfor %}
-                <button type="submit" name="submit_goals">Submit</button>
+                    <div id="{{ category }}_metrics" class="category-metrics">
+                        <div class="metric-grid">
+                            {% for metric in metrics %}
+                                <div class="goal-container" onclick="toggleMetricBox(this, document.getElementById('{{ category }}_{{ metric }}'), '{{ category }}', '{{ metric }}')">
+                                    <input type="checkbox" id="{{ category }}_{{ metric }}" name="{{ category }}_{{ metric }}">
+                                    <label for="{{ category }}_{{ metric }}">{{ metric }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Right Side: Selected Metrics -->
+        <div class="selected-metrics">
+            <div class="selected-metrics-header">Selected Metrics</div>
+            <div id="selected-metrics-list">
+                <!-- Dynamically filled with selected metrics -->
             </div>
-        </form>
+        </div>
+
+        <!-- Submit Button Container -->
+        <div class="submit-btn-container">
+            <button id="submit-btn" class="submit-btn" disabled>Submit</button>
+        </div>
     </div>
 </body>
 </html>
