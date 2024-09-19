@@ -212,6 +212,7 @@
             metrics.forEach((metric) => {
                 const metricElement = document.createElement('div');
                 metricElement.classList.add('goal-container');
+                metricElement.setAttribute('data-metric', metric); // Add data-metric attribute
                 metricElement.textContent = metric;
 
                 // Check if the metric is already selected
@@ -245,7 +246,13 @@
         }
 
         function removeMetric(metric, metricElement) {
-            metricElement.classList.remove('selected');
+            // Deselect in the metrics grid
+            const gridMetricElement = document.querySelector(`.goal-container[data-metric="${metric}"]`);
+            if (gridMetricElement) {
+                gridMetricElement.classList.remove('selected');
+            }
+
+            // Remove from the right-side list
             const metricItem = document.querySelector(`.selected-metric-item[data-metric='${metric}']`);
             if (metricItem) {
                 metricItem.remove();
@@ -267,7 +274,7 @@
             const deleteBtn = document.createElement('button');
             deleteBtn.classList.add('delete-btn');
             deleteBtn.textContent = 'X';
-            deleteBtn.onclick = () => removeMetric(metric, document.querySelector(`.goal-container:contains('${metric}')`));
+            deleteBtn.onclick = () => removeMetric(metric, metricItem);
 
             metricItem.appendChild(deleteBtn);
             selectedMetricsList.appendChild(metricItem);
