@@ -1,95 +1,58 @@
-<!-- templates/results.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gap Analysis Results</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Selected Metrics</title>
     <style>
-        .bill-container {
-            margin: 20px auto;
-            width: 80%;
-            max-width: 800px;
-            background-color: #f9f9f9;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .bill-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .bill-divider {
-            border-top: 1px dashed #bbb;
-            margin: 20px 0;
-        }
-        .bill-section {
-            margin-bottom: 10px;
-        }
-        .bill-item {
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: Arial, sans-serif;
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f9;
         }
-        .bill-item label {
-            font-weight: bold;
+
+        .results-container {
+            width: 80vw;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
-        .bill-item span {
-            margin-left: 10px;
+
+        .metric-list {
+            list-style-type: none;
+            padding: 0;
         }
-        .gap-positive {
-            color: green;
+
+        .metric-item {
+            padding: 15px;
+            background-color: #e0f7fa;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 18px;
         }
-        .gap-negative {
-            color: red;
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="bill-container">
-        <h2 class="bill-header">Gap Analysis Report</h2>
-        
-        <!-- Company Details -->
-        <div class="bill-section">
-            <div class="bill-item">
-                <label>Company Name:</label> <span>{{ company_name }}</span>
-            </div>
-            <div class="bill-item">
-                <label>Market Value:</label> <span>{{ market_value }}</span>
-            </div>
-            <div class="bill-item">
-                <label>Location:</label> <span>{{ location }}</span>
-            </div>
-            <div class="bill-item">
-                <label>Founder Name:</label> <span>{{ founder_name }}</span>
-            </div>
-            <div class="bill-item">
-                <label>Type of Business:</label> <span>{{ business_type }}</span>
-            </div>
-        </div>
-        
-        <div class="bill-divider"></div>
-        
-        <!-- Gap Analysis Results -->
-        <h3>Selected Goals and Metrics</h3>
-        {% for goal, values in selected_goals.items() %}
-            <div class="bill-item">
-                <label>{{ goal }}</label>
-                <span>Target: {{ values.target }}</span>
-                <span>Actual: {{ values.actual }}</span>
-                <span>Gap: 
-                    {% if values.gap != 'N/A' %}
-                        <span class="{{ 'gap-positive' if values.gap == 0 else 'gap-negative' }}">
-                            {{ values.gap }}
-                        </span>
-                    {% else %}
-                        N/A
-                    {% endif %}
-                </span>
-            </div>
-        {% endfor %}
+    <div class="results-container">
+        <h1>Metrics Selected in Priority Order</h1>
+        <ul class="metric-list">
+            {% for metric in selected_metrics %}
+                <li class="metric-item">{{ loop.index }}. {{ metric }}</li>
+            {% endfor %}
+        </ul>
     </div>
 </body>
 </html>

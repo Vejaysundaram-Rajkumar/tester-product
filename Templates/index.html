@@ -182,185 +182,224 @@
             cursor: pointer;
             opacity: 1;
         }
+        .priority-number {
+    margin-right: 10px;
+    background-color: #1976d2;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    display: inline-block;
+}
+
     </style>
     <script>
         var selectedMetrics = [];
-        var selectedMetricsCount = 0;
-        var maxMetrics = 10;
-        var draggingItem = null;
+var selectedMetricsCount = 0;
+var maxMetrics = 10;
+var draggingItem = null;
 
-        function showMetrics(category) {
-            const metricGrid = document.getElementById('metric-grid');
-            const placeholderMessage = document.getElementById('placeholder-message');
-            const categories = document.querySelectorAll('.category-box');
+function showMetrics(category) {
+    const metricGrid = document.getElementById('metric-grid');
+    const placeholderMessage = document.getElementById('placeholder-message');
+    const categories = document.querySelectorAll('.category-box');
 
-            // Clear previous selection
-            categories.forEach(cat => cat.classList.remove('selected'));
+    // Clear previous selection
+    categories.forEach(cat => cat.classList.remove('selected'));
 
-            // Highlight selected category
-            const selectedCategoryBox = document.querySelector(`[onclick="showMetrics('${category}')"]`);
-            selectedCategoryBox.classList.add('selected');
+    // Highlight selected category
+    const selectedCategoryBox = document.querySelector(`[onclick="showMetrics('${category}')"]`);
+    selectedCategoryBox.classList.add('selected');
 
-            // Clear existing metrics
-            metricGrid.innerHTML = ''; 
-            placeholderMessage.style.display = 'none';
+    // Clear existing metrics
+    metricGrid.innerHTML = ''; 
+    placeholderMessage.style.display = 'none';
 
-            // Fetch the metrics for the selected category from a hidden data field (or passed via Flask)
-            const metrics = document.getElementById(category + '_metrics').value.split(',');
+    // Fetch the metrics for the selected category from a hidden data field (or passed via Flask)
+    const metrics = document.getElementById(category + '_metrics').value.split(',');
 
-            // Display metrics for the selected category and update visual selection based on the right list
-            metrics.forEach((metric) => {
-                const metricElement = document.createElement('div');
-                metricElement.classList.add('goal-container');
-                metricElement.setAttribute('data-metric', metric); // Add data-metric attribute
-                metricElement.textContent = metric;
+    // Display metrics for the selected category and update visual selection based on the right list
+    metrics.forEach((metric) => {
+        const metricElement = document.createElement('div');
+        metricElement.classList.add('goal-container');
+        metricElement.setAttribute('data-metric', metric); // Add data-metric attribute
+        metricElement.textContent = metric;
 
-                // Check if the metric is already selected
-                if (selectedMetrics.includes(metric)) {
-                    metricElement.classList.add('selected');
-                }
-
-                metricElement.onclick = () => toggleMetricSelection(metricElement, metric);
-                metricGrid.appendChild(metricElement);
-            });
-        }
-
-        function toggleMetricSelection(metricElement, metric) {
-            if (selectedMetrics.includes(metric)) {
-                removeMetric(metric, metricElement);
-            } else {
-                if (selectedMetricsCount >= maxMetrics) {
-                    alert("You can select a maximum of " + maxMetrics + " metrics.");
-                    return;
-                }
-                addMetric(metric, metricElement);
-            }
-        }
-
-        function addMetric(metric, metricElement) {
+        // Check if the metric is already selected
+        if (selectedMetrics.includes(metric)) {
             metricElement.classList.add('selected');
-            selectedMetrics.push(metric);
-            selectedMetricsCount++;
-            addSelectedMetricToRightList(metric);
-            updateSubmitButtonState();
         }
 
-        function removeMetric(metric, metricElement) {
-            // Deselect in the metrics grid
-            const gridMetricElement = document.querySelector(`.goal-container[data-metric="${metric}"]`);
-            if (gridMetricElement) {
-                gridMetricElement.classList.remove('selected');
-            }
+        metricElement.onclick = () => toggleMetricSelection(metricElement, metric);
+        metricGrid.appendChild(metricElement);
+    });
+}
 
-            // Remove from the right-side list
-            const metricItem = document.querySelector(`.selected-metric-item[data-metric='${metric}']`);
-            if (metricItem) {
-                metricItem.remove();
-            }
-            selectedMetrics = selectedMetrics.filter(m => m !== metric);
-            selectedMetricsCount--;
-            updateSubmitButtonState();
+function toggleMetricSelection(metricElement, metric) {
+    if (selectedMetrics.includes(metric)) {
+        removeMetric(metric, metricElement);
+    } else {
+        if (selectedMetricsCount >= maxMetrics) {
+            alert("You can select a maximum of " + maxMetrics + " metrics.");
+            return;
         }
+        addMetric(metric, metricElement);
+    }
+}
 
-        function addSelectedMetricToRightList(metric) {
-            const selectedMetricsList = document.getElementById('selected-metrics-list');
+function addMetric(metric, metricElement) {
+    metricElement.classList.add('selected');
+    selectedMetrics.push(metric);
+    selectedMetricsCount++;
+    addSelectedMetricToRightList(metric);
+    updateSubmitButtonState();
+}
 
-            const metricItem = document.createElement('li');
-            metricItem.classList.add('selected-metric-item');
-            metricItem.draggable = true;
-            metricItem.textContent = metric;
-            metricItem.setAttribute('data-metric', metric);  // Add data attribute to help in selection/deselection
+function removeMetric(metric, metricElement) {
+    // Deselect in the metrics grid
+    const gridMetricElement = document.querySelector(`.goal-container[data-metric="${metric}"]`);
+    if (gridMetricElement) {
+        gridMetricElement.classList.remove('selected');
+    }
 
-            const deleteBtn = document.createElement('button');
-            deleteBtn.classList.add('delete-btn');
-            deleteBtn.textContent = 'X';
-            deleteBtn.onclick = () => removeMetric(metric, metricItem);
+    // Remove from the right-side list
+    const metricItem = document.querySelector(`.selected-metric-item[data-metric='${metric}']`);
+    if (metricItem) {
+        metricItem.remove();
+    }
+    selectedMetrics = selectedMetrics.filter(m => m !== metric);
+    selectedMetricsCount--;
+    updateSubmitButtonState();
+    updatePriorities(); // Update priorities after removing a metric
+}
 
-            metricItem.appendChild(deleteBtn);
-            selectedMetricsList.appendChild(metricItem);
+function addSelectedMetricToRightList(metric) {
+    const selectedMetricsList = document.getElementById('selected-metrics-list');
 
-            // Add drag-and-drop functionality
-            metricItem.addEventListener('dragstart', (e) => {
-                draggingItem = metricItem;
-                metricItem.classList.add('dragging');
-            });
+    const metricItem = document.createElement('li');
+    metricItem.classList.add('selected-metric-item');
+    metricItem.draggable = true;
+    metricItem.textContent = metric;
+    metricItem.setAttribute('data-metric', metric);  // Add data attribute to help in selection/deselection
 
-            metricItem.addEventListener('dragend', () => {
-                draggingItem = null;
-                metricItem.classList.remove('dragging');
-            });
+    const deleteBtn = document.createElement('button');
+    deleteBtn.classList.add('delete-btn');
+    deleteBtn.textContent = 'X';
+    deleteBtn.onclick = () => removeMetric(metric, metricItem);
 
-            selectedMetricsList.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                const afterElement = getDragAfterElement(selectedMetricsList, e.clientY);
-                if (afterElement == null) {
-                    selectedMetricsList.appendChild(draggingItem);
-                } else {
-                    selectedMetricsList.insertBefore(draggingItem, afterElement);
-                }
-            });
+    // Add a priority number (ranking) next to the metric
+    const priority = document.createElement('span');
+    priority.classList.add('priority-number');
+    priority.textContent = selectedMetrics.length; // Rank based on the order of selection
+
+    metricItem.appendChild(priority);
+    metricItem.appendChild(deleteBtn);
+    selectedMetricsList.appendChild(metricItem);
+
+    // Add drag-and-drop functionality
+    metricItem.addEventListener('dragstart', (e) => {
+        draggingItem = metricItem;
+        metricItem.classList.add('dragging');
+    });
+
+    metricItem.addEventListener('dragend', () => {
+        draggingItem = null;
+        metricItem.classList.remove('dragging');
+        updatePriorities(); // Update priorities after dragging ends
+    });
+
+    selectedMetricsList.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const afterElement = getDragAfterElement(selectedMetricsList, e.clientY);
+        if (afterElement == null) {
+            selectedMetricsList.appendChild(draggingItem);
+        } else {
+            selectedMetricsList.insertBefore(draggingItem, afterElement);
         }
+    });
+}
 
-        function updateSubmitButtonState() {
-            const submitButton = document.getElementById('submit-btn');
-            if (selectedMetricsCount === maxMetrics) {
-                submitButton.classList.add('enabled');
-                submitButton.disabled = false;
-            } else {
-                submitButton.classList.remove('enabled');
-                submitButton.disabled = true;
-            }
+function updatePriorities() {
+    const selectedMetricsList = document.getElementById('selected-metrics-list');
+    const metricItems = selectedMetricsList.querySelectorAll('.selected-metric-item');
+    
+    selectedMetrics = []; // Reset the selectedMetrics array
+
+    metricItems.forEach((item, index) => {
+        const prioritySpan = item.querySelector('.priority-number');
+        prioritySpan.textContent = index + 1; // Update priority number
+
+        // Update the selectedMetrics array to reflect the new order
+        const metric = item.getAttribute('data-metric');
+        selectedMetrics.push(metric);
+    });
+}
+
+function updateSubmitButtonState() {
+    const submitButton = document.getElementById('submit-btn');
+    if (selectedMetricsCount === maxMetrics) {
+        submitButton.classList.add('enabled');
+        submitButton.disabled = false;
+    } else {
+        submitButton.classList.remove('enabled');
+        submitButton.disabled = true;
+    }
+}
+
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.selected-metric-item:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
         }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
 
-        function getDragAfterElement(container, y) {
-            const draggableElements = [...container.querySelectorAll('.selected-metric-item:not(.dragging)')];
-
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
-                if (offset < 0 && offset > closest.offset) {
-                    return { offset: offset, element: child };
-                } else {
-                    return closest;
-                }
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
-        }
     </script>
+    
 </head>
 <body>
-    <div class="form-container">
-        <!-- Left Side: Categories and Metrics -->
-        <div class="left-side">
-            <h1>Parameters</h1>
-            <div class="categories-grid">
-                <!-- Dynamically Generated Categories -->
-                {% for category, metrics in categories_and_metrics.items() %}
-                    <div class="category-box" onclick="showMetrics('{{ category }}')">
-                        {{ category }}
-                    </div>
-                    <!-- Hidden input to hold metrics for each category -->
-                    <input type="hidden" id="{{ category }}_metrics" value="{{ ','.join(metrics) }}">
-                {% endfor %}
-            </div>
-            <h1>Metrics</h1>
-            <div id="metrics-container" class="metrics-container">
-                <!-- Placeholder message or dynamically loaded metrics -->
-                <p id="placeholder-message">Here the metrics will be given according to the category that you select.</p>
-                <div id="metric-grid" class="metric-grid"></div>
-            </div>
+
+<div class="form-container">
+    <!-- Left Side: Categories and Metrics -->
+    <div class="left-side">
+        <h1>Parameters</h1>
+        <div class="categories-grid">
+            <!-- Dynamically Generated Categories -->
+            {% for category, metrics in categories_and_metrics.items() %}
+                <div class="category-box" onclick="showMetrics('{{ category }}')">
+                    {{ category }}
+                </div>
+                <!-- Hidden input to hold metrics for each category -->
+                <input type="hidden" id="{{ category }}_metrics" value="{{ ','.join(metrics) }}">
+            {% endfor %}
         </div>
-
-        <!-- Right Side: Selected Metrics -->
-        <div class="right-side">
-            <div class="selected-metrics-header">Selected Metrics</div>
-            <ul id="selected-metrics-list" class="selected-metrics-list">
-                <!-- Selected metrics with delete option -->
-            </ul>
-
-            <div class="submit-btn-container">
-                <button id="submit-btn" class="submit-btn" disabled>Submit</button>
-            </div>
+        <h1>Metrics</h1>
+        <div id="metrics-container" class="metrics-container">
+            <!-- Placeholder message or dynamically loaded metrics -->
+            <p id="placeholder-message">Here the metrics will be given according to the category that you select.</p>
+            <div id="metric-grid" class="metric-grid"></div>
         </div>
     </div>
+
+    <!-- Right Side: Selected Metrics -->
+    <div class="right-side">
+        <div class="selected-metrics-header">Selected Metrics</div>
+        <ul id="selected-metrics-list" class="selected-metrics-list">
+            <!-- Selected metrics with delete option -->
+        </ul>
+
+        <div class="submit-btn-container">
+            <button id="submit-btn" class="submit-btn" disabled>Submit</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

@@ -16,44 +16,12 @@ categories_and_metrics = {
 }
 
 @app.route('/', methods=['GET', 'POST'])
-def company_form():
+def index():
     if request.method == 'POST':
-        company_name = request.form.get('company_name')
-        market_value = request.form.get('market_value')
-        location = request.form.get('location')
-        founder_name = request.form.get('founder_name')
-        business_type = request.form.get('business_type')
+        selected_metrics = request.form.getlist('selected_metrics[]')
+        return render_template('results.html', selected_metrics=selected_metrics)
 
-        if 'submit_goals' in request.form:
-            selected_metrics = {}
-            selected_metrics_count = 0
-
-            # Process selected metrics and gather their target/actual values
-            for category, metrics in categories_and_metrics.items():
-                for metric in metrics:
-                    if request.form.get(f'{category}_{metric}'):
-                        target_value = request.form.get(f'{category}_{metric}_target')
-                        actual_value = request.form.get(f'{category}_{metric}_actual')
-                        try:
-                            gap = abs(float(target_value) - float(actual_value))
-                        except ValueError:
-                            gap = 'N/A'
-                        selected_metrics[metric] = {'target': target_value, 'actual': actual_value, 'gap': gap}
-                        selected_metrics_count += 1
-                        if selected_metrics_count >= 10:
-                            break
-                if selected_metrics_count >= 10:
-                    break
-
-            return render_template('results.html', company_name=company_name, market_value=market_value,
-                                   location=location, founder_name=founder_name, business_type=business_type,
-                                   selected_metrics=selected_metrics)
-
-        return render_template('index.html', step='goals', company_name=company_name, market_value=market_value,
-                               location=location, founder_name=founder_name, business_type=business_type,
-                               categories_and_metrics=categories_and_metrics)
-
-    return render_template('index.html', step='details', categories_and_metrics=categories_and_metrics)
+    return render_template('index.html', categories_and_metrics=categories_and_metrics)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
