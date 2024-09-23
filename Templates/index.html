@@ -41,9 +41,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            justify-items: center;
-            background-color: #f0f4f7;
-            padding: 10px;
+            width: 100%;
         }
 
         .category-box {
@@ -85,16 +83,17 @@
 
         .metric-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            width: 100%;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 25px;
+            padding: auto;
+            width: 130%;
         }
 
         .goal-container {
             background-color: #e0f7fa;
             padding: 10px;
             border-radius: 5px;
-            text-align: center;
+            text-align: left;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
@@ -151,25 +150,30 @@
         }
 
         .submit-btn-container {
-            margin-top: 20px;
-            text-align: center;
-        }
+        position:fixed;
+        left: 640px;
+        top:45px;
+        width: 100%;   /* Full width of the container */
+        text-align: center;
+        z-index: 100;
+    }
 
-        .submit-btn {
-            padding: 10px 20px;
-            background-color: #90caf9;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
+    .submit-btn {
+        padding: 10px 20px;
+        background-color: #90caf9;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: not-allowed;
+        opacity: 0.5;
+        font-size: 16px;
+    }
 
-        .submit-btn.enabled {
-            background-color: #1976d2;
-            cursor: pointer;
-            opacity: 1;
-        }
+    .submit-btn.enabled {
+        background-color: #1976d2;
+        cursor: pointer;
+        opacity: 1;
+    }
         .priority-number {
     margin-right: 10px;
     background-color: #1976d2;
@@ -391,13 +395,14 @@
     <div class="right-side">
         <h2>Selected Metrics</h2>
         <ul id="selected-metrics-list"></ul>
-        <div class="submit-btn-container">
-            <form method="POST" action="/" onsubmit="submitForm()">
-                <input type="hidden" id="selected-metrics-input" name="selected_metrics">
-                <button id="submit-btn" class="submit-btn" disabled>Submit</button>
-            </form>
-        </div>
-    </div>
+    </div>        <!-- Submit button at the bottom of the page -->
+<div class="submit-btn-container">
+    <form method="POST" action="/" onsubmit="submitForm()">
+        <input type="hidden" id="selected-metrics-input" name="selected_metrics">
+        <button id="submit-btn" class="submit-btn" disabled>Submit</button>
+    </form>
+</div>
+
 </div>
 
 </body>
