@@ -45,14 +45,24 @@
         }
     </style>
 </head>
+
 <body>
     <div class="results-container">
-        <h1>Metrics Selected in Priority Order</h1>
-        <ul class="metric-list">
+        <h1>Provide Criteria Values for Selected Metrics</h1>
+        <form method="POST" action="/save_results">
             {% for metric in selected_metrics %}
-                <li class="metric-item">{{ loop.index }}. {{ metric }}</li>
+                <h2>{{ metric }}</h2>
+                <ul>
+                    {% for criterion in metrics_data[metric] %}
+                        <li>
+                            <label>{{ criterion }}:</label>
+                            <input type="text" name="criteria_{{ metric }}_{{ criterion }}" required>
+                        </li>
+                    {% endfor %}
+                </ul>
             {% endfor %}
-        </ul>
+            <button type="submit">Calculate Outcome</button>
+        </form>
     </div>
 </body>
 </html>

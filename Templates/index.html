@@ -376,7 +376,7 @@
         <h1>Parameters</h1>
         <div class="categories-grid">
             <!-- Dynamically Generated Categories -->
-            {% for category, metrics in categories_and_metrics.items() %}
+            {% for category, metrics in metrics_list.items() %}
                 <div class="category-box" onclick="showMetrics('{{ category }}')">
                     {{ category }}
                 </div>
