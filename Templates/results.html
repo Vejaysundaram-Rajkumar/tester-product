@@ -10,57 +10,209 @@
             padding: 0;
             height: 100%;
             width: 100%;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Arial', sans-serif;
             background-color: #f4f4f9;
         }
 
         .results-container {
-            width: 80vw;
+            max-width: 1000px;
+            width: 90vw;
             padding: 20px;
             background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .metric-list {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .metric-item {
-            padding: 15px;
-            background-color: #e0f7fa;
-            margin: 10px 0;
-            border-radius: 5px;
-            font-size: 18px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin: 30px auto;
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 26px;
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .column {
+            width: 48%;
+            padding: 0 10px;
+        }
+
+        .metric-block {
+            background-color: #e0f7fa;
+            border-radius: 10px;
+            padding: 20px;
             margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        label {
+            font-size: 16px;
+            color: #333;
+            flex: 1;
+        }
+
+        input[type="number"] {
+            width: 60%;
+            padding: 8px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            border-color: #1976d2;
+            outline: none;
+        }
+
+        .target-checkbox {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .target-checkbox label {
+            margin-left: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .target-input {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .target-input input[type="number"] {
+            width: 100%;
+        }
+
+        button {
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 30px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #135ba1;
+        }
+
+        @media (max-width: 768px) {
+            .column {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .metric-block {
+                padding: 15px;
+            }
         }
     </style>
+     <script>
+        // JavaScript to toggle the visibility of target input fields
+        function toggleTargetInput(checkbox, targetInputId) {
+            const targetInput = document.getElementById(targetInputId);
+            if (checkbox.checked) {
+                targetInput.style.display = 'block';
+            } else {
+                targetInput.style.display = 'none';
+            }
+        }
+
+        // Function to sanitize metric names by replacing special characters and spaces
+        function sanitizeString(str) {
+            return str.replace(/[^a-zA-Z0-9]/g, '_');  
+        }
+    </script>
 </head>
 
 <body>
     <div class="results-container">
         <h1>Provide Criteria Values for Selected Metrics</h1>
         <form method="POST" action="/save_results">
-            {% for metric in selected_metrics %}
-                <h2>{{ metric }}</h2>
-                <ul>
-                    {% for criterion in metrics_data[metric] %}
-                        <li>
-                            <label>{{ criterion }}:</label>
-                            <input type="text" name="criteria_{{ metric }}_{{ criterion }}" required>
-                        </li>
+            <div class="form-container">
+                <div class="column">
+                    <!-- Left column -->
+                    {% for metric in selected_metrics[0:5] %}
+                        {% set sanitized_metric = metric|replace(' ', '_')|replace('[^a-zA-Z0-9]', '_') %}
+                        <div class="metric-block">
+                            <h2>{{ metric }}</h2>
+                            <ul>
+                                {% for criterion in metrics_data[metric] %}
+                                    {% set sanitized_criterion = criterion|replace(' ', '_')|replace('[^a-zA-Z0-9]', '_') %}
+                                    <li>
+                                        <label for="criteria_{{ sanitized_metric }}_{{ sanitized_criterion }}">{{ criterion }}:</label>
+                                        <input type="number" id="criteria_{{ sanitized_metric }}_{{ sanitized_criterion }}" name="criteria_{{ sanitized_metric }}_{{ sanitized_criterion }}" step="0.01" required placeholder="Enter value">
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <div class="target-checkbox">
+                                <input type="checkbox" id="target_{{ sanitized_metric }}" name="add_target_{{ sanitized_metric }}" onclick="toggleTargetInput(this, 'target_input_{{ sanitized_metric }}')">
+                                <label for="target_{{ sanitized_metric }}">Add Target</label>
+                            </div>
+                            <div class="target-input" id="target_input_{{ sanitized_metric }}" style="display:none;">
+                                <input type="number" name="target_{{ sanitized_metric }}" placeholder="Enter target value" step="0.01">
+                            </div>
+                        </div>
                     {% endfor %}
-                </ul>
-            {% endfor %}
+                </div>
+
+                <div class="column">
+                    <!-- Right column -->
+                    {% for metric in selected_metrics[5:] %}
+                        {% set sanitized_metric = metric|replace(' ', '_')|replace('[^a-zA-Z0-9]', '_') %}
+                        <div class="metric-block">
+                            <h2>{{ metric }}</h2>
+                            <ul>
+                                {% for criterion in metrics_data[metric] %}
+                                    {% set sanitized_criterion = criterion|replace(' ', '_')|replace('[^a-zA-Z0-9]', '_') %}
+                                    <li>
+                                        <label for="criteria_{{ sanitized_metric }}_{{ sanitized_criterion }}">{{ criterion }}:</label>
+                                        <input type="number" id="criteria_{{ sanitized_metric }}_{{ sanitized_criterion }}" name="criteria_{{ sanitized_metric }}_{{ sanitized_criterion }}" step="0.01" required placeholder="Enter value">
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <div class="target-checkbox">
+                                <input type="checkbox" id="target_{{ sanitized_metric }}" name="add_target_{{ sanitized_metric }}" onclick="toggleTargetInput(this, 'target_input_{{ sanitized_metric }}')">
+                                <label for="target_{{ sanitized_metric }}">Add Target</label>
+                            </div>
+                            <div class="target-input" id="target_input_{{ sanitized_metric }}" style="display:none;">
+                                <input type="number" name="target_{{ sanitized_metric }}" placeholder="Enter target value" step="0.01">
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
             <button type="submit">Calculate Outcome</button>
         </form>
     </div>

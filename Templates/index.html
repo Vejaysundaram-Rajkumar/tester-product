@@ -153,7 +153,7 @@
         position:fixed;
         left: 640px;
         top:45px;
-        width: 100%;   /* Full width of the container */
+        width: 100%;   
         text-align: center;
         z-index: 100;
     }
@@ -324,11 +324,11 @@
             const selectedMetricsList = document.getElementById('selected-metrics-list');
             const metricItems = selectedMetricsList.querySelectorAll('.selected-metric-item');
     
-            selectedMetrics = [];  // Reset the selectedMetrics array
+            selectedMetrics = [];  //resetting  the metrics list
     
             metricItems.forEach((item, index) => {
                 const prioritySpan = item.querySelector('.priority-number');
-                prioritySpan.textContent = index + 1;  // Update priority number
+                prioritySpan.textContent = index + 1;  
     
                 // Update the selectedMetrics array to reflect the new order
                 const metric = item.getAttribute('data-metric');
@@ -363,7 +363,7 @@
     
         function submitForm() {
             const selectedMetricsInput = document.getElementById('selected-metrics-input');
-            selectedMetricsInput.value = JSON.stringify(selectedMetrics);  // Serialize the selected metrics array into a string
+            selectedMetricsInput.value = JSON.stringify(selectedMetrics);  //selected metrics into a string
         }
     </script>
     
@@ -395,7 +395,7 @@
     <div class="right-side">
         <h2>Selected Metrics</h2>
         <ul id="selected-metrics-list"></ul>
-    </div>        <!-- Submit button at the bottom of the page -->
+    </div>        <!-- Submit button at the top of the page -->
 <div class="submit-btn-container">
     <form method="POST" action="/" onsubmit="submitForm()">
         <input type="hidden" id="selected-metrics-input" name="selected_metrics">
