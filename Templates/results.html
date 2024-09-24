@@ -170,7 +170,7 @@
 
 <body>
     <div class="results-container">
-        <h1>Select Metrics and Provide Criteria</h1>
+        <h1>Provide Criteria for the Selected Metrics</h1>
         <form method="POST" action="/save_results">
             <div class="form-container">
                 <!-- Metric blocks in two columns -->
@@ -179,7 +179,7 @@
                     <div class="metric-block">
                         <h2>{{ metric }}</h2>
                         <ul>
-                            {% for criterion in metrics_data[metric] %}
+                            {% for criterion in metrics_data[metric]['criteria'] %}
                                 {% set sanitized_criterion = criterion|replace(' ', '_')|replace('[^a-zA-Z0-9]', '_') %}
                                 <li>
                                     <label for="criteria_{{ sanitized_metric }}_{{ sanitized_criterion }}">{{ criterion }}:</label>
