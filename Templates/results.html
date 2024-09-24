@@ -175,24 +175,24 @@
             <div class="form-container">
                 <!-- Metric blocks in two columns -->
                 {% for metric in selected_metrics %}
-                    {% set sanitized_metric = metric|replace(' ', '_')|replace('[^a-zA-Z0-9]', '_') %}
+                    
                     <div class="metric-block">
                         <h2>{{ metric }}</h2>
                         <ul>
                             {% for criterion in metrics_data[metric]['criteria'] %}
-                                {% set sanitized_criterion = criterion|replace(' ', '_')|replace('[^a-zA-Z0-9]', '_') %}
+                               
                                 <li>
-                                    <label for="criteria_{{ sanitized_metric }}_{{ sanitized_criterion }}">{{ criterion }}:</label>
-                                    <input type="number" id="criteria_{{ sanitized_metric }}_{{ sanitized_criterion }}" name="criteria_{{ sanitized_metric }}_{{ sanitized_criterion }}" step="0.01" required placeholder="Enter value">
+                                    <label for="criteria_{{ metric }}_{{ criterion }}">{{ criterion }}:</label>
+                                    <input type="number" id="criteria_{{ metric }}_{{ criterion }}" name="criteria_{{ metric }}_{{ criterion }}" step="0.01" required placeholder="Enter value">
                                 </li>
                             {% endfor %}
                         </ul>
                         <div class="target-checkbox">
-                            <input type="checkbox" id="target_{{ sanitized_metric }}" name="add_target_{{ sanitized_metric }}" onclick="toggleTargetInput(this, 'target_input_{{ sanitized_metric }}')">
-                            <label for="target_{{ sanitized_metric }}">Add Target</label>
+                            <input type="checkbox" id="target_{{ metric }}" name="add_target_{{ metric }}" onclick="toggleTargetInput(this, 'target_input_{{ metric }}')">
+                            <label for="target_{{ metric }}">Add Target</label>
                         </div>
-                        <div class="target-input" id="target_input_{{ sanitized_metric }}" style="display:none;">
-                            <input type="number" name="target_{{ sanitized_metric }}" placeholder="Enter target value" step="0.01">
+                        <div class="target-input" id="target_input_{{ metric }}" style="display:none;">
+                            <input type="number" name="target_{{ metric }}" placeholder="Enter target value" step="0.01">
                         </div>
                     </div>
                 {% endfor %}
