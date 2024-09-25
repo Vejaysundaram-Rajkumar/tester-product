@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Metric Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+      padding: 20px;
+      background-color: #f0f0f0;
+      justify-content: center;
+    }
+    .chart-container {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 150px;
+      height: 250px;
+      position: relative;
+    }
+    .chart-title {
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* Thermometer Styles */
+    .thermometer {
+      position: relative;
+      width: 50px;
+      height: 200px;
+      background: #ccc;
+      border-radius: 25px;
+      border: 3px solid #333;
+    }
+    .thermometer .bulb {
+      position: absolute;
+      bottom: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 40px;
+      background-color: red;
+      border-radius: 50%;
+      border: 5px solid #333;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+    .thermometer .fill {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(to top, red, yellow, green);
+      width: 44px;
+      height: 0;
+      border-radius: 25px;
+      transition: height 3s ease-out;
+    }
+
+    /* Battery Level Chart */
+    .battery {
+      position: relative;
+      width: 50px;
+      height: 200px;
+      background: gray;
+      border-radius: 8px;
+      border: 3px solid #333;
+    }
+    .battery .cap {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 10px;
+      background-color: #333;
+      border-radius: 3px;
+    }
+    .battery .fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      background: gray;
+      width: 100%;
+      height: 0;
+      border-radius: 8px;
+      transition: height 3s ease-out;
+    }
+    .battery.low .fill {
+      background: red;
+    }
+    .battery.medium .fill {
+      background: yellow;
+    }
+    .battery.high .fill {
+      background: green;
+    }
+
+    /* Gauge (Speedometer) */
+    .gauge {
+      position: relative;
+      width: 120px;
+      height: 60px;
+      border-radius: 100% 100% 0 0;
+      border: 10px solid #ddd;
+      border-bottom: none;
+    }
+    .gauge .needle {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform-origin: bottom;
+      width: 4px;
+      height: 60px;
+      background: red;
+      transform: rotate(0deg);
+      transition: transform 2s ease-out;
+    }
+
+    /* Traffic Signal */
+    .traffic-signal {
+      width: 50px;
+      height: 130px;
+      background: black;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-around;
+      flex-direction: column;
+      padding: 5px;
+    }
+    .traffic-signal .light {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: grey;
+      transition: background 1s;
+    }
+
+    /* Rocket Launch */
+    .rocket {
+      position: relative;
+      width: 50px;
+      height: 200px;
+    }
+    .rocket img {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140px;
+      transition: bottom 3s ease-out;
+    }
+
+    /* Lift Metric Chart */
+    .lift {
+      position: relative;
+      width: 50px;
+      height: 200px;
+      background: #ccc;
+      border-radius: 5px;
+      border: 3px solid #333;
+    }
+    .lift .elevator {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      background: #333;
+      transition: bottom 3s ease-out;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Thermometer Chart -->
+  <div class="chart-container">
+    <div class="chart-title">Thermometer</div>
+    <div class="thermometer">
+      <div class="fill" id="thermometerFill"></div>
+      <div class="bulb"></div>
+    </div>
+  </div>
+
+  <!-- Battery Level Chart -->
+  <div class="chart-container">
+    <div class="chart-title">Battery</div>
+    <div class="battery" id="batteryContainer">
+      <div class="cap"></div>
+      <div class="fill" id="batteryFill"></div>
+    </div>
+  </div>
+
+  <!-- Gauge (Speedometer) -->
+  <div class="chart-container">
+    <div class="chart-title">Gauge</div>
+    <div class="gauge">
+      <div class="needle" id="gaugeNeedle"></div>
+    </div>
+  </div>
+
+  <!-- Traffic Signal Chart -->
+  <div class="chart-container">
+    <div class="chart-title">Traffic Signal</div>
+    <div class="traffic-signal" id="trafficSignal">
+      <div class="light" id="redLight"></div>
+      <div class="light" id="yellowLight"></div>
+      <div class="light" id="greenLight"></div>
+    </div>
+  </div>
+
+  <!-- Rocket Launch Chart -->
+  <div class="chart-container">
+    <div class="chart-title">Rocket Launch</div>
+    <div class="rocket">
+      <img src="image.png" id="rocketImage" />
+    </div>
+  </div>
+
+  <!-- Lift Metric Chart -->
+  <div class="chart-container">
+    <div class="chart-title">Lift Metric</div>
+    <div class="lift">
+      <div class="elevator" id="liftElevator"></div>
+    </div>
+  </div>
+
+  <script>
+    // Sample data for 10 metrics
+    const metrics = [
+      { outcome: 90, target: 100 },  // Thermometer
+      { outcome: 30, target: 100 },  // Battery
+      { outcome: 70, target: 100 },  // Gauge
+      { outcome: 40, target: 100 },  // Traffic Signal
+      { outcome: 300, target: 500 },  // Rocket Launch
+      { outcome: 50, target: 100 }   // Lift Metric
+    ];
+
+    // Thermometer Fill
+    setTimeout(() => {
+      document.getElementById('thermometerFill').style.height = `${(metrics[0].outcome / metrics[0].target) * 100}%`;
+    }, 100);
+
+    // Battery Fill and Color
+    const batteryFill = document.getElementById('batteryFill');
+    const batteryContainer = document.getElementById('batteryContainer');
+    const batteryPercentage = (metrics[1].outcome / metrics[1].target) * 100;
+    setTimeout(() => {
+      batteryFill.style.height = `${batteryPercentage}%`;
+      if (batteryPercentage < 30) {
+        batteryContainer.classList.add('low');
+      } else if (batteryPercentage < 70) {
+        batteryContainer.classList.add('medium');
+      } else {
+        batteryContainer.classList.add('high');
+      }
+    }, 100);
+
+    // Gauge Needle
+    const gaugeAngle = (metrics[2].outcome / metrics[2].target) * 180;
+    setTimeout(() => {
+      document.getElementById('gaugeNeedle').style.transform = `rotate(${gaugeAngle}deg)`;
+    }, 100);
+
+    // Traffic Signal
+    const trafficOutcome = metrics[3].outcome / metrics[3].target;
+    setTimeout(() => {
+      if (trafficOutcome < 0.5) {
+        document.getElementById('redLight').style.background = 'red';
+      } else if (trafficOutcome < 0.75) {
+        document.getElementById('yellowLight').style.background = 'yellow';
+      } else {
+        document.getElementById('greenLight').style.background = 'green';
+      }
+    }, 100);
+
+    // Rocket Launch (use the provided rocket image and animate it)
+    setTimeout(() => {
+      document.getElementById('rocketImage').style.bottom = `${(metrics[4].outcome / metrics[4].target) * 100}%`;
+    }, 100);
+
+    // Lift Metric
+    setTimeout(() => {
+      document.getElementById('liftElevator').style.bottom = `${(metrics[5].outcome / metrics[5].target) * 100}%`;
+    }, 100);
+
+  </script>
+</body>
+</html>
