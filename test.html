@@ -7,26 +7,40 @@
   <style>
     body {
       font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+
+    .dashboard-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .chart-wrapper {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 20px;
-      padding: 20px;
-      background-color: #f0f0f0;
-      justify-content: center;
+      justify-items: center;
     }
+
     .chart-container {
       background: #fff;
       border-radius: 8px;
       padding: 20px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      width: 150px;
+      width: 260px;
       height: 250px;
       position: relative;
     }
+
     .chart-title {
       margin-bottom: 10px;
       font-size: 14px;
@@ -106,14 +120,16 @@
       background: green;
     }
 
-    /* Gauge (Speedometer) */
+    /* Enhanced Speedometer Gauge */
     .gauge {
       position: relative;
-      width: 120px;
-      height: 60px;
+      width: 140px;
+      height: 70px;
       border-radius: 100% 100% 0 0;
       border: 10px solid #ddd;
       border-bottom: none;
+      background: radial-gradient(circle at center, #fff, #ddd);
+      overflow: hidden;
     }
     .gauge .needle {
       position: absolute;
@@ -121,7 +137,7 @@
       left: 50%;
       transform-origin: bottom;
       width: 4px;
-      height: 60px;
+      height: 80px;
       background: red;
       transform: rotate(0deg);
       transition: transform 2s ease-out;
@@ -180,59 +196,207 @@
       transition: bottom 3s ease-out;
     }
 
+    /* Water Boat Chart */
+    .animation-wrapper {
+      background: #ace5ee;
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .water {
+      bottom: 0;
+      left: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .water ul.waves {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .water ul.waves li {
+      background-repeat: repeat-x;
+      opacity: 0.7; /* Make the waves partially transparent */
+    }
+
+    .water ul.waves li.wave-one {
+      animation: wave 8.7s linear infinite;
+      bottom: 0px;
+      height: 50px;
+      left: 0;
+      position: absolute;
+      right: 0;
+      z-index: 10;
+    }
+
+    .water ul.waves li.wave-two {
+      animation: wave 10s linear infinite;
+      bottom: 0px;
+      height: 84px;
+      left: 0;
+      position: absolute;
+      right: 0;
+      z-index: 9;
+    }
+
+    .water ul.waves li.wave-three {
+      animation: wave 25s linear infinite;
+      bottom: 0;
+      height: 190px;
+      left: 0;
+      position: absolute;
+      right: 0;
+      z-index: 8;
+    }
+
+    .water ul.waves li.wave-four {
+      animation: wave 25s linear infinite;
+      bottom: 0;
+      height: 205px;
+      left: 0;
+      position: absolute;
+      right: 0;
+      opacity: 0.6; /* Further reduce opacity to better see the sinking boat */
+    }
+
+    .boat {
+      animation: boat 3s linear infinite;
+      background-repeat: no-repeat;
+      bottom: 50%;
+      height: 140px;
+      left: 50%;
+      position: absolute;
+      transform: translateX(-50%);
+      width: 250px;
+      transition: bottom 3s ease-out, transform 3s ease-out;
+    }
+
+    @keyframes wave {
+      0% {
+        background-position: 0 0;
+      }
+
+      100% {
+        background-position: 1920px 0;
+      }
+    }
+
+    @keyframes boat {
+      0% {
+        transform: translateX(-50%) rotate(0);
+      }
+
+      50% {
+        transform: translateX(-50%) rotate(-3deg);
+      }
+
+      100% {
+        transform: translateX(-50%) rotate(0);
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Thermometer Chart -->
-  <div class="chart-container">
-    <div class="chart-title">Thermometer</div>
-    <div class="thermometer">
-      <div class="fill" id="thermometerFill"></div>
-      <div class="bulb"></div>
-    </div>
-  </div>
+  <!-- Dashboard Title -->
+  <div class="dashboard-title">Enhanced Metric Dashboard</div>
 
-  <!-- Battery Level Chart -->
-  <div class="chart-container">
-    <div class="chart-title">Battery</div>
-    <div class="battery" id="batteryContainer">
-      <div class="cap"></div>
-      <div class="fill" id="batteryFill"></div>
+  <!-- Charts Wrapper -->
+  <div class="chart-wrapper">
+    <!-- Thermometer Chart -->
+    <div class="chart-container">
+      <div class="chart-title">Thermometer</div>
+      <div class="thermometer">
+        <div class="fill" id="thermometerFill"></div>
+        <div class="bulb"></div>
+      </div>
     </div>
-  </div>
 
-  <!-- Gauge (Speedometer) -->
-  <div class="chart-container">
-    <div class="chart-title">Gauge</div>
-    <div class="gauge">
-      <div class="needle" id="gaugeNeedle"></div>
+    <!-- Battery Level Chart -->
+    <div class="chart-container">
+      <div class="chart-title">Battery</div>
+      <div class="battery" id="batteryContainer">
+        <div class="cap"></div>
+        <div class="fill" id="batteryFill"></div>
+      </div>
     </div>
-  </div>
 
-  <!-- Traffic Signal Chart -->
-  <div class="chart-container">
-    <div class="chart-title">Traffic Signal</div>
-    <div class="traffic-signal" id="trafficSignal">
-      <div class="light" id="redLight"></div>
-      <div class="light" id="yellowLight"></div>
-      <div class="light" id="greenLight"></div>
+    <!-- Enhanced Speedometer Gauge -->
+    <div class="chart-container">
+      <div class="chart-title">Gauge</div>
+      <div class="gauge">
+        <div class="needle" id="gaugeNeedle"></div>
+      </div>
     </div>
-  </div>
 
-  <!-- Rocket Launch Chart -->
-  <div class="chart-container">
-    <div class="chart-title">Rocket Launch</div>
-    <div class="rocket">
-      <img src="image.png" id="rocketImage" />
+    <!-- Traffic Signal Chart -->
+    <div class="chart-container">
+      <div class="chart-title">Traffic Signal</div>
+      <div class="traffic-signal" id="trafficSignal">
+        <div class="light" id="redLight"></div>
+        <div class="light" id="yellowLight"></div>
+        <div class="light" id="greenLight"></div>
+      </div>
     </div>
-  </div>
 
-  <!-- Lift Metric Chart -->
-  <div class="chart-container">
-    <div class="chart-title">Lift Metric</div>
-    <div class="lift">
-      <div class="elevator" id="liftElevator"></div>
+    <!-- Rocket Launch Chart -->
+    <div class="chart-container">
+      <div class="chart-title">Rocket Launch</div>
+      <div class="rocket">
+        <img src="image.png" id="rocketImage" />
+      </div>
+    </div>
+
+    <!-- Lift Metric Chart -->
+    <div class="chart-container">
+      <div class="chart-title">Lift Metric</div>
+      <div class="lift">
+        <div class="elevator" id="liftElevator"></div>
+      </div>
+    </div>
+
+    <!-- Water Boat Chart -->
+    <div class="chart-container">
+      <div class="chart-title">Water Boat</div>
+      <div class="animation-wrapper">
+        <div class="water">
+          <ul class="waves">
+            <li class="wave-one" style="background-image: url('https://i.postimg.cc/7LtCC11Y/wave1.png');"></li>
+            <li class="wave-two" style="background-image: url('https://i.postimg.cc/P5hv05rh/wave2.png');"></li>
+            <li class="wave-three" style="background-image: url('https://i.postimg.cc/63Dyc91k/wave3.png');"></li>
+            <li class="wave-four" style="background-image: url('https://i.postimg.cc/1tg8DgM0/wave4.png');"></li>
+          </ul>
+        </div>
+        <div class="boat" id="boat" style="background-image: url('https://i.postimg.cc/GmQTRnHD/boat2.png');"></div>
+      </div>
+    </div>
+
+    <!-- Additional Chart 1: Fuel Gauge -->
+    <div class="chart-container">
+      <div class="chart-title">Fuel Gauge</div>
+      <div class="gauge">
+        <div class="needle" id="fuelGaugeNeedle"></div>
+      </div>
+    </div>
+
+    <!-- Additional Chart 2: Clock Dial -->
+    <div class="chart-container">
+      <div class="chart-title">Clock Dial</div>
+      <div class="gauge">
+        <div class="needle" id="clockDialNeedle"></div>
+      </div>
+    </div>
+
+    <!-- Additional Chart 3: Temperature Dial -->
+    <div class="chart-container">
+      <div class="chart-title">Temperature Dial</div>
+      <div class="gauge">
+        <div class="needle" id="temperatureDialNeedle"></div>
+      </div>
     </div>
   </div>
 
@@ -241,10 +405,14 @@
     const metrics = [
       { outcome: 90, target: 100 },  // Thermometer
       { outcome: 30, target: 100 },  // Battery
-      { outcome: 70, target: 100 },  // Gauge
+      { outcome: 50, target: 100 },  // Gauge
       { outcome: 40, target: 100 },  // Traffic Signal
-      { outcome: 300, target: 500 },  // Rocket Launch
-      { outcome: 50, target: 100 }   // Lift Metric
+      { outcome: 300, target: 500 }, // Rocket Launch
+      { outcome: 50, target: 100 },  // Lift Metric
+      { outcome: 20, target: 100 },  // Water Boat
+      { outcome: 70, target: 100 },  // Fuel Gauge
+      { outcome: 45, target: 100 },  // Clock Dial
+      { outcome: 60, target: 100 }   // Temperature Dial
     ];
 
     // Thermometer Fill
@@ -285,7 +453,7 @@
       }
     }, 100);
 
-    // Rocket Launch (use the provided rocket image and animate it)
+    // Rocket Launch
     setTimeout(() => {
       document.getElementById('rocketImage').style.bottom = `${(metrics[4].outcome / metrics[4].target) * 100}%`;
     }, 100);
@@ -295,6 +463,40 @@
       document.getElementById('liftElevator').style.bottom = `${(metrics[5].outcome / metrics[5].target) * 100}%`;
     }, 100);
 
+    // Water Boat Metric
+    const boatElement = document.getElementById('boat');
+    const boatMetric = metrics[6];
+    const boatPercentage = (boatMetric.outcome / boatMetric.target) * 100;
+    setTimeout(() => {
+      if (boatPercentage >= 70) {
+        boatElement.style.bottom = `70%`;
+        boatElement.style.transform = 'translateX(-50%) rotate(0deg)';
+      } else if (boatPercentage >= 30) {
+        boatElement.style.bottom = `${50 + (boatPercentage / 100) * 20}%`;
+        boatElement.style.transform = 'translateX(-50%) rotate(-3deg)';
+      } else {
+        boatElement.style.bottom = `${30 + (boatPercentage / 100) * 20}%`;
+        boatElement.style.transform = 'translateX(-50%) rotate(-10deg)';
+      }
+    }, 100);
+
+    // Fuel Gauge Needle
+    const fuelGaugeAngle = (metrics[7].outcome / metrics[7].target) * 180;
+    setTimeout(() => {
+      document.getElementById('fuelGaugeNeedle').style.transform = `rotate(${fuelGaugeAngle}deg)`;
+    }, 100);
+
+    // Clock Dial Needle
+    const clockDialAngle = (metrics[8].outcome / metrics[8].target) * 180;
+    setTimeout(() => {
+      document.getElementById('clockDialNeedle').style.transform = `rotate(${clockDialAngle}deg)`;
+    }, 100);
+
+    // Temperature Dial Needle
+    const temperatureDialAngle = (metrics[9].outcome / metrics[9].target) * 180;
+    setTimeout(() => {
+      document.getElementById('temperatureDialNeedle').style.transform = `rotate(${temperatureDialAngle}deg)`;
+    }, 100);
   </script>
 </body>
 </html>
