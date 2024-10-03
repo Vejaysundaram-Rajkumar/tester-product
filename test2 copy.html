@@ -121,29 +121,136 @@
             border: 1px solid black;
             border-radius: 10px; /* Rounded corners for the right part */
         }
-/* chart title css */
-.chart-title {
-      margin-bottom: 10px;
-      font-size: 14px;
-      font-weight: bold;
-      text-align: center;
-    }
 
-         /* Speedometer chart 1 */
-    canvas {
-  position: absolute;
-  top: 30%;
-  left: 14%;
-  transform: translate(-50%, -50%);
-}
-.text {
-  color: white;
-  font-weight: 600;
-  font-size: 24px;
-  position: absolute;
-  top: 35%;
-  left: 14%;  transform: translate(-50%, -50%);
-}
+        /* Chart title CSS */
+        .chart-title {
+            margin-top: 10px;
+            margin-left: 10px;
+            margin-bottom: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        /* Speedometer chart */
+        canvas {
+            position: absolute;
+            top: 30%;
+            left: 14%;
+            transform: translate(-50%, -50%);
+        }
+
+        .text {
+            color: white;
+            font-weight: 600;
+            font-size: 24px;
+            position: absolute;
+            top: 35%;
+            left: 14%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Water Boat Chart */
+        .animation-wrapper {
+            background: #ace5ee;
+            position: absolute;
+            width: 28%;
+            height: 30%;
+            left:19px;
+            bottom:20px;
+        }
+
+        .water {
+            bottom: 0;
+            left: 0;
+            position: absolute;
+            width: 100%;
+            height: 30%;
+        }
+
+        .water ul.waves {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .water ul.waves li {
+            background-repeat: repeat-x;
+            opacity: 0.7; /* Make the waves partially transparent */
+        }
+
+        .water ul.waves li.wave-one {
+            animation: wave 8.7s linear infinite;
+            bottom: 0;
+            height: 50px;
+            left: 0;
+            position: absolute;
+            right: 0;
+            z-index: 10;
+        }
+
+        .water ul.waves li.wave-two {
+            animation: wave 10s linear infinite;
+            bottom: 0;
+            height: 84px;
+            left: 0;
+            position: absolute;
+            right: 0;
+            z-index: 9;
+        }
+
+        .water ul.waves li.wave-three {
+            animation: wave 25s linear infinite;
+            bottom: 0;
+            height: 190px;
+            left: 0;
+            position: absolute;
+            right: 0;
+            z-index: 8;
+        }
+
+        .water ul.waves li.wave-four {
+            animation: wave 25s linear infinite;
+            bottom: 0;
+            height: 205px;
+            left: 0;
+            position: absolute;
+            right: 0;
+            opacity: 0.6; /* Further reduce opacity to better see the sinking boat */
+        }
+
+        .boat {
+            animation: boat 3s linear infinite;
+            background-repeat: no-repeat;
+            bottom: 10%;
+            left: 50%;
+            position: absolute;
+            transform: translateX(-50%);
+            width: 250px;
+            height: 140px;
+            transition: bottom 3s ease-out, transform 3s ease-out;
+        }
+
+        @keyframes wave {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 1920px 0;
+            }
+        }
+
+        @keyframes boat {
+            0% {
+                transform: translateX(-50%) rotate(0);
+            }
+            50% {
+                transform: translateX(-50%) rotate(-3deg);
+            }
+            100% {
+                transform: translateX(-50%) rotate(0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -153,11 +260,23 @@
             <div class="left">
                 <div class="left-top">
                     <div class="chart-title">Gauge</div>
-                    <canvas id="canvas" height="175" width="350" class="m-auto">
-                    </canvas>
+                    <canvas id="canvas" height="175" width="350" class="m-auto"></canvas>
                     <p class="text">0 %</p>
                 </div>
-                <div class="left-bottom"></div>
+                <div class="left-bottom">
+                    <div class="chart-title">Water Boat</div>
+                    <div class="animation-wrapper">
+                        <div class="water">
+                            <ul class="waves">
+                                <li class="wave-one" style="background-image: url('https://i.postimg.cc/7LtCC11Y/wave1.png');"></li>
+                                <li class="wave-two" style="background-image: url('https://i.postimg.cc/P5hv05rh/wave2.png');"></li>
+                                <li class="wave-three" style="background-image: url('https://i.postimg.cc/63Dyc91k/wave3.png');"></li>
+                                <li class="wave-four" style="background-image: url('https://i.postimg.cc/1tg8DgM0/wave4.png');"></li>
+                            </ul>
+                        </div>
+                        <div class="boat" id="boat" style="background-image: url('https://i.postimg.cc/GmQTRnHD/boat2.png');"></div>
+                    </div>
+                </div>
             </div>
             <div class="middle">
                 <div class="middle-top"></div>
@@ -179,11 +298,11 @@
        const metrics = [
          { outcome: 50, target: 100 },  // Thermometer
          { outcome: 60, target: 100 },  // Battery
-         { outcome: 30, target: 100 },  // Gauge
+         { outcome: 90, target: 100 },  // Gauge
          { outcome: 40, target: 100 },  // Traffic Signal
          { outcome: 300, target: 500 }, // Rocket Launch
          { outcome: 50, target: 100 },  // Lift Metric
-         { outcome: 20, target: 100 },  // Water Boat
+         { outcome: 10, target: 100 },  // Water Boat
          { outcome: 40, target: 100 },  // tree chart
          { outcome: 0, target: 100 },  // target chart
          { outcome: 60, target: 100 }   // Temperature Dial
