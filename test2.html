@@ -3,181 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realistic Tree Growth with Outcome-Based Growth</title>
+    <title>Dynamic Bullet Impact on Target</title>
     <style>
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            background-color: #f0f0f0;
             margin: 0;
-            background-color: #87ceeb;
+            overflow: hidden;
+            position: relative;
         }
 
-        canvas {
-            border: 1px solid black;
-            background-color: #fff;
+        .target {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background-color: red;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .inner-circle {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .circle1 {
+            width: 240px;
+            height: 240px;
+            background-color: white;
+        }
+
+        .circle2 {
+            width: 180px;
+            height: 180px;
+            background-color: red;
+        }
+
+        .circle3 {
+            width: 120px;
+            height: 120px;
+            background-color: white;
+        }
+
+        .circle4 {
+            width: 60px;
+            height: 60px;
+            background-color: red;
+        }
+
+        .circle5 {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: black;
+        }
+
+        .bullet-hole {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: black;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.5s ease-in-out;
+            clip-path: polygon(
+                50% 0%, 60% 10%, 70% 0%, 80% 15%, 90% 30%, 
+                100% 50%, 85% 60%, 70% 75%, 60% 90%, 50% 100%, 
+                40% 85%, 25% 75%, 10% 60%, 0% 50%, 10% 30%, 25% 15%
+            );
+        }
+
+        .bullet-hole:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 5px solid rgba(0, 0, 0, 0.4);
+            transform: translate(-50%, -50%);
+            clip-path: polygon(
+                50% 0%, 65% 15%, 75% 5%, 90% 20%, 95% 50%, 
+                85% 65%, 75% 80%, 65% 90%, 50% 100%, 35% 85%, 
+                25% 75%, 10% 60%, 5% 50%, 15% 30%, 35% 20%
+            );
+        }
+
+        @keyframes bulletImpact {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 <body>
-
-    <canvas id="treeCanvas" width="800" height="600"></canvas>
+    <div class="target">
+        <div class="inner-circle circle1"></div>
+        <div class="inner-circle circle2"></div>
+        <div class="inner-circle circle3"></div>
+        <div class="inner-circle circle4"></div>
+        <div class="inner-circle circle5">100</div>
+        <div class="bullet-hole"></div>
+    </div>
 
     <script>
-        const canvas = document.getElementById('treeCanvas');
-        const ctx = canvas.getContext('2d');
-        let branches = [];
-        let leaves = [];
-        let roots = [];
-        let growthSpeed = 0.02; // Speed factor for growing
-        let outcomeValue = 0; // Tracks the growth progress
-        const targetValue = 100; // Set the target value for the full tree growth
+        window.onload = function() {
+            const bulletHole = document.querySelector('.bullet-hole');
 
-        // Initial trunk base
-        const trunkBase = {
-            x: canvas.width / 2,
-            y: canvas.height,
-            length: 100,
-            angle: -Math.PI / 2, // Grow upwards
-            width: 10,
+            // Example target and outcome pairs
+            const metrics = [
+                { outcome: 50, target: 100 },  // Thermometer
+                { outcome: 60, target: 100 },  // Battery
+                { outcome: 90, target: 100 },  // Gauge
+                { outcome: 40, target: 100 },  // Traffic Signal
+                { outcome: 300, target: 500 }, // Rocket Launch
+                { outcome: 95, target: 100 },  // Lift Metric
+                { outcome: 20, target: 100 },  // Water Boat
+                { outcome: 0, target: 100 }, // Tree Chart - Dead Center
+                { outcome: 45, target: 100 },  // Clock Dial
+                { outcome: 65, target: 100 }   // Temperature Dial
+            ];
+
+            // Choose the desired metric to display
+            const selectedMetric = metrics[7]; // Change this index to choose a different metric
+
+            // Calculate the percentage of the outcome with respect to the target
+            const percentage = (selectedMetric.outcome / selectedMetric.target) * 100;
+
+            let x, y;
+
+            // Special case: if outcome equals target, bullet hits dead center
+            if (selectedMetric.outcome === selectedMetric.target) {
+                x = -13;
+                y = -13;
+                console.log("hi");
+            } else {
+                // Otherwise, calculate position based on the percentage
+                const maxRadius = 150;
+                const minRadius = 0;
+
+                // Distance calculation
+                const distanceFromCenter = Math.max(minRadius, (100 - percentage) / 100 * maxRadius);
+
+                // Convert polar coordinates into Cartesian coordinates
+                const angle = Math.random() * 2 * Math.PI; // Random angle to make hits look natural
+                x = Math.cos(angle) * distanceFromCenter;
+                y = Math.sin(angle) * distanceFromCenter;
+            }
+
+            // Set bullet hole position based on calculated coordinates
+            setTimeout(() => {
+                bulletHole.style.left = `calc(50% + ${x}px)`;
+                bulletHole.style.top = `calc(50% + ${y}px)`;
+                bulletHole.style.opacity = 1;
+                bulletHole.style.transform = 'scale(1)';
+                bulletHole.style.animation = 'bulletImpact 0.5s ease-in-out';
+            }, 1000);
         };
-
-        // Add initial trunk to branches list
-        branches.push({ ...trunkBase, growth: 0 });
-
-        function drawTree() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw branches and grow
-            branches.forEach((branch, index) => {
-                const growth = Math.min(branch.growth + growthSpeed, 1);
-                branches[index].growth = growth;
-
-                const endX = branch.x + Math.cos(branch.angle) * branch.length * growth;
-                const endY = branch.y + Math.sin(branch.angle) * branch.length * growth;
-
-                ctx.lineWidth = branch.width;
-                ctx.strokeStyle = "#8B4513"; // Tree trunk color
-                ctx.beginPath();
-                ctx.moveTo(branch.x, branch.y);
-                ctx.lineTo(endX, endY);
-                ctx.stroke();
-
-                if (growth >= 1 && branch.width > 2) {
-                    // Create two new branches once a branch has fully grown
-                    let newWidth = branch.width * 0.7;
-                    branches.push({
-                        x: endX,
-                        y: endY,
-                        length: branch.length * 0.7,
-                        angle: branch.angle - Math.PI / 6,
-                        width: newWidth,
-                        growth: 0,
-                    });
-                    branches.push({
-                        x: endX,
-                        y: endY,
-                        length: branch.length * 0.7,
-                        angle: branch.angle + Math.PI / 6,
-                        width: newWidth,
-                        growth: 0,
-                    });
-                }
-                if (growth >= 1 && branch.width <= 2) {
-                    // Once branches are thin enough, create leaves
-                    if (!leaves.some(leaf => leaf.parentBranchIndex === index)) {
-                        leaves.push({
-                            x: endX,
-                            y: endY,
-                            growth: 0,
-                            parentBranchIndex: index
-                        });
-                    }
-                }
-            });
-
-            // Draw leaves and grow them gradually
-            leaves.forEach((leaf, index) => {
-                const leafGrowth = Math.min(leaf.growth + growthSpeed * 2, 1);
-                leaves[index].growth = leafGrowth;
-
-                if (leafGrowth > 0) {
-                    const leafSize = leafGrowth * 10; // Leaves grow up to a size of 10
-                    ctx.fillStyle = "green";
-                    ctx.beginPath();
-                    ctx.arc(leaf.x, leaf.y, leafSize, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            });
-
-            // Draw roots (similar approach to branches but in downward angles)
-            if (roots.length === 0) {
-                roots.push({
-                    x: trunkBase.x,
-                    y: trunkBase.y,
-                    length: 50,
-                    angle: Math.PI / 3,
-                    width: 8,
-                    growth: 0,
-                });
-                roots.push({
-                    x: trunkBase.x,
-                    y: trunkBase.y,
-                    length: 50,
-                    angle: (2 * Math.PI) / 3,
-                    width: 8,
-                    growth: 0,
-                });
-            }
-
-            roots.forEach((root, index) => {
-                const growth = Math.min(root.growth + growthSpeed, 1);
-                roots[index].growth = growth;
-
-                const endX = root.x + Math.cos(root.angle) * root.length * growth;
-                const endY = root.y + Math.sin(root.angle) * root.length * growth;
-
-                ctx.lineWidth = root.width;
-                ctx.strokeStyle = "#8B4513"; // Root color
-                ctx.beginPath();
-                ctx.moveTo(root.x, root.y);
-                ctx.lineTo(endX, endY);
-                ctx.stroke();
-
-                if (growth >= 1 && root.width > 2) {
-                    let newWidth = root.width * 0.6;
-                    roots.push({
-                        x: endX,
-                        y: endY,
-                        length: root.length * 0.6,
-                        angle: root.angle - Math.PI / 8,
-                        width: newWidth,
-                        growth: 0,
-                    });
-                    roots.push({
-                        x: endX,
-                        y: endY,
-                        length: root.length * 0.6,
-                        angle: root.angle + Math.PI / 8,
-                        width: newWidth,
-                        growth: 0,
-                    });
-                }
-            });
-
-            // Update outcome value based on the growth of branches, leaves, and roots
-            outcomeValue = Math.min(outcomeValue + growthSpeed, targetValue);
-
-            // Continue the animation until the target is reached
-            if (outcomeValue < targetValue) {
-                requestAnimationFrame(drawTree);
-            }
-        }
-
-        // Start the animation
-        drawTree();
     </script>
-
 </body>
 </html>

@@ -36,8 +36,8 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      width: 260px;
-      height: 250px;
+      width: 300px;
+      height: 300px;
       position: relative;
     }
 
@@ -298,6 +298,108 @@
             background: #87CEEB; /* Sky background */
             border: 1px solid black;
         }
+
+
+        /* Target css */
+        .target {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background-color: red;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .inner-circle {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .circle1 {
+            width: 240px;
+            height: 240px;
+            background-color: white;
+        }
+
+        .circle2 {
+            width: 180px;
+            height: 180px;
+            background-color: red;
+        }
+
+        .circle3 {
+            width: 120px;
+            height: 120px;
+            background-color: white;
+        }
+
+        .circle4 {
+            width: 60px;
+            height: 60px;
+            background-color: red;
+        }
+
+        .circle5 {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: black;
+        }
+
+        .bullet-hole {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: black;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.5s ease-in-out;
+            clip-path: polygon(
+                50% 0%, 60% 10%, 70% 0%, 80% 15%, 90% 30%, 
+                100% 50%, 85% 60%, 70% 75%, 60% 90%, 50% 100%, 
+                40% 85%, 25% 75%, 10% 60%, 0% 50%, 10% 30%, 25% 15%
+            );
+        }
+
+        .bullet-hole:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 5px solid rgba(0, 0, 0, 0.4);
+            transform: translate(-50%, -50%);
+            clip-path: polygon(
+                50% 0%, 65% 15%, 75% 5%, 90% 20%, 95% 50%, 
+                85% 65%, 75% 80%, 65% 90%, 50% 100%, 35% 85%, 
+                25% 75%, 10% 60%, 5% 50%, 15% 30%, 35% 20%
+            );
+        }
+
+        @keyframes bulletImpact {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
   </style>
 </head>
 <body>
@@ -384,9 +486,14 @@
     <!-- Additional Chart 2: Clock Dial -->
     <div class="chart-container">
       <div class="chart-title">Clock Dial</div>
-      <div class="gauge">
-        <div class="needle" id="clockDialNeedle"></div>
-      </div>
+      <div class="target">
+        <div class="inner-circle circle1"></div>
+        <div class="inner-circle circle2"></div>
+        <div class="inner-circle circle3"></div>
+        <div class="inner-circle circle4"></div>
+        <div class="inner-circle circle5">100</div>
+        <div class="bullet-hole"></div>
+    </div>
     </div>
 
     <!-- Additional Chart 3: Temperature Dial -->
@@ -408,8 +515,8 @@
       { outcome: 300, target: 500 }, // Rocket Launch
       { outcome: 50, target: 100 },  // Lift Metric
       { outcome: 20, target: 100 },  // Water Boat
-      { outcome: 98, target: 100 },  // tree chart
-      { outcome: 45, target: 100 },  // Clock Dial
+      { outcome: 100, target: 100 },  // tree chart
+      { outcome: 100, target: 100 },  // target chart
       { outcome: 60, target: 100 }   // Temperature Dial
     ];
 
@@ -606,6 +713,7 @@
     // Canvas setup for the tree
     const treeCanvas = document.getElementById('treeCanvas2');
         const treeCtx = treeCanvas.getContext('2d');
+        const fruit = treeCanvas.getContext('2d');
 
         // Growth parameters
         const outcomeValue = metrics[7].outcome;
@@ -685,8 +793,8 @@
             treeCtx.lineTo(this.to.x, this.to.y);
             treeCtx.stroke();
 
-            // Determine if branches or leaves should be added based on growthRatio
-            if (this.growth === 1 && !this.hasSplit && branches.length < maxBranches) {
+ // Determine if branches or leaves should be added based on growthRatio
+ if (this.growth === 1 && !this.hasSplit && branches.length < maxBranches) {
                 if (growthRatio >= 0.3 && this.width > 2) {
                     // Split branches only if outcome is >= 30%
                     this.hasSplit = true;
@@ -698,27 +806,29 @@
                     branches.push(new Branch(this.to, this.dir.clone().rotate(15 + angleVariance), newLength, newWidth));
                 }
 
-                if (growthRatio > 0.7 && this.width < 3) {
-                    // Add leaves if outcome is >= 50%
-                    drawLeaf(this.to.x, this.to.y,20);
+                if (growthRatio >= 0.7 && this.width < 3) {
+                    // Add leaves if outcome is >= 70%
+                    drawLeaf(this.to.x, this.to.y, 20);
+                    this.hasLeaves = true;
                 }
             }
 
             if (growthRatio >= 0.9 && this.growth === 1 && this.width < 3) {
                 // Add more leaves if outcome is >= 90%
-                drawLeaf(this.to.x + 5, this.to.y + 5,40);
-                drawLeaf(this.to.x - 5, this.to.y - 5,40);                
-                
+                drawLeaf(this.to.x + 5, this.to.y + 5, 30);
+                drawLeaf(this.to.x - 5, this.to.y - 5, 30);
+                this.hasLeaves = true;
             }
+
             if (growthRatio === 1 && this.growth === 1 && this.hasLeaves) {
                 // Add fruits if outcome equals target
-                drawFruit(this.to.x + 215, this.to.y + 5);
-                drawFruit(this.to.x - 5, this.to.y - 5);
+                drawFruit(this.to.x , this.to.y - 10);
+                drawFruit(this.to.x, this.to.y );
             }
         };
 
         // Function to draw leaves
-        function drawLeaf(x, y,width) {
+        function drawLeaf(x, y, width) {
             treeCtx.fillStyle = "green";
             treeCtx.beginPath();
             treeCtx.arc(x, y, width, 0, Math.PI * 2); // Draw leaf as a small circle
@@ -727,10 +837,10 @@
 
         // Function to draw fruits
         function drawFruit(x, y) {
-            treeCtx.fillStyle = "red";
-            treeCtx.beginPath();
-            treeCtx.arc(x, y, 50, 0, Math.PI * 2); // Draw fruit as a small red circle
-            treeCtx.fill();
+            fruit.fillStyle = "red";
+            fruit.beginPath();
+            fruit.arc(x, y, 10, 0, Math.PI * 2); // Draw fruit as a small red circle
+            fruit.fill();
         }
 
         function drawTree() {
@@ -745,13 +855,47 @@
 
         // Start tree drawing animation
         drawTree();
+          // target chart
+          window.onload = function() {
+            const bulletHole = document.querySelector('.bullet-hole');
 
+            
+            // Choose the desired metric to display
+            const selectedMetric = metrics[8];
 
-    // Clock Dial Needle
-    const clockDialAngle = (metrics[8].outcome / metrics[8].target) * 180;
-    setTimeout(() => {
-      document.getElementById('clockDialNeedle').style.transform = `rotate(${clockDialAngle}deg)`;
-    }, 100);
+            // Calculate the percentage of the outcome with respect to the target
+            const percentage = (selectedMetric.outcome / selectedMetric.target) * 100;
+
+            let x, y;
+
+            // Special case: if outcome equals target, bullet hits dead center
+            if (selectedMetric.outcome === selectedMetric.target) {
+                x = -13;
+                y = -13;
+                console.log("hi");
+            } else {
+                // Otherwise, calculate position based on the percentage
+                const maxRadius = 150;
+                const minRadius = 0;
+
+                // Distance calculation
+                const distanceFromCenter = Math.max(minRadius, (100 - percentage) / 100 * maxRadius);
+
+                // Convert polar coordinates into Cartesian coordinates
+                const angle = Math.random() * 2 * Math.PI; // Random angle to make hits look natural
+                x = Math.cos(angle) * distanceFromCenter;
+                y = Math.sin(angle) * distanceFromCenter;
+            }
+
+            // Set bullet hole position based on calculated coordinates
+            setTimeout(() => {
+                bulletHole.style.left = `calc(50% + ${x}px)`;
+                bulletHole.style.top = `calc(50% + ${y}px)`;
+                bulletHole.style.opacity = 1;
+                bulletHole.style.transform = 'scale(1)';
+                bulletHole.style.animation = 'bulletImpact 0.5s ease-in-out';
+            }, 1000);
+        };
 
     // Temperature Dial Needle
     const temperatureDialAngle = (metrics[9].outcome / metrics[9].target) * 180;
