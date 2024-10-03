@@ -183,7 +183,7 @@
          { outcome: 40, target: 100 },  // Traffic Signal
          { outcome: 300, target: 500 }, // Rocket Launch
          { outcome: 50, target: 100 },  // Lift Metric
-         { outcome: 20, target: 100 },  // Water Boat
+         { outcome: 100, target: 100 },  // Water Boat
          { outcome: 40, target: 100 },  // tree chart
          { outcome: 0, target: 100 },  // target chart
          { outcome: 60, target: 100 }   // Temperature Dial
@@ -372,8 +372,9 @@
        const boatPercentage = (boatMetric.outcome / boatMetric.target) * 100;
        setTimeout(() => {
          if (boatPercentage >= 70) {
-           boatElement.style.bottom = `70%`;
-           boatElement.style.transform = 'translateX(-50%) rotate(0deg)';
+           boatElement.style.bottom =`50%`;
+
+           boatElement.style.transform = `${70 + (boatPercentage / 100) * 20}%`;
          } else if (boatPercentage >= 30) {
            boatElement.style.bottom = `${50 + (boatPercentage / 100) * 20}%`;
            boatElement.style.transform = 'translateX(-50%) rotate(-3deg)';
