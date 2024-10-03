@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistic Tree Growth with Outcome-Based Growth</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #87ceeb;
+        }
+
+        canvas {
+            border: 1px solid black;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="treeCanvas" width="800" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('treeCanvas');
+        const ctx = canvas.getContext('2d');
+        let branches = [];
+        let leaves = [];
+        let roots = [];
+        let growthSpeed = 0.02; // Speed factor for growing
+        let outcomeValue = 0; // Tracks the growth progress
+        const targetValue = 100; // Set the target value for the full tree growth
+
+        // Initial trunk base
+        const trunkBase = {
+            x: canvas.width / 2,
+            y: canvas.height,
+            length: 100,
+            angle: -Math.PI / 2, // Grow upwards
+            width: 10,
+        };
+
+        // Add initial trunk to branches list
+        branches.push({ ...trunkBase, growth: 0 });
+
+        function drawTree() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw branches and grow
+            branches.forEach((branch, index) => {
+                const growth = Math.min(branch.growth + growthSpeed, 1);
+                branches[index].growth = growth;
+
+                const endX = branch.x + Math.cos(branch.angle) * branch.length * growth;
+                const endY = branch.y + Math.sin(branch.angle) * branch.length * growth;
+
+                ctx.lineWidth = branch.width;
+                ctx.strokeStyle = "#8B4513"; // Tree trunk color
+                ctx.beginPath();
+                ctx.moveTo(branch.x, branch.y);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+
+                if (growth >= 1 && branch.width > 2) {
+                    // Create two new branches once a branch has fully grown
+                    let newWidth = branch.width * 0.7;
+                    branches.push({
+                        x: endX,
+                        y: endY,
+                        length: branch.length * 0.7,
+                        angle: branch.angle - Math.PI / 6,
+                        width: newWidth,
+                        growth: 0,
+                    });
+                    branches.push({
+                        x: endX,
+                        y: endY,
+                        length: branch.length * 0.7,
+                        angle: branch.angle + Math.PI / 6,
+                        width: newWidth,
+                        growth: 0,
+                    });
+                }
+                if (growth >= 1 && branch.width <= 2) {
+                    // Once branches are thin enough, create leaves
+                    if (!leaves.some(leaf => leaf.parentBranchIndex === index)) {
+                        leaves.push({
+                            x: endX,
+                            y: endY,
+                            growth: 0,
+                            parentBranchIndex: index
+                        });
+                    }
+                }
+            });
+
+            // Draw leaves and grow them gradually
+            leaves.forEach((leaf, index) => {
+                const leafGrowth = Math.min(leaf.growth + growthSpeed * 2, 1);
+                leaves[index].growth = leafGrowth;
+
+                if (leafGrowth > 0) {
+                    const leafSize = leafGrowth * 10; // Leaves grow up to a size of 10
+                    ctx.fillStyle = "green";
+                    ctx.beginPath();
+                    ctx.arc(leaf.x, leaf.y, leafSize, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+
+            // Draw roots (similar approach to branches but in downward angles)
+            if (roots.length === 0) {
+                roots.push({
+                    x: trunkBase.x,
+                    y: trunkBase.y,
+                    length: 50,
+                    angle: Math.PI / 3,
+                    width: 8,
+                    growth: 0,
+                });
+                roots.push({
+                    x: trunkBase.x,
+                    y: trunkBase.y,
+                    length: 50,
+                    angle: (2 * Math.PI) / 3,
+                    width: 8,
+                    growth: 0,
+                });
+            }
+
+            roots.forEach((root, index) => {
+                const growth = Math.min(root.growth + growthSpeed, 1);
+                roots[index].growth = growth;
+
+                const endX = root.x + Math.cos(root.angle) * root.length * growth;
+                const endY = root.y + Math.sin(root.angle) * root.length * growth;
+
+                ctx.lineWidth = root.width;
+                ctx.strokeStyle = "#8B4513"; // Root color
+                ctx.beginPath();
+                ctx.moveTo(root.x, root.y);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+
+                if (growth >= 1 && root.width > 2) {
+                    let newWidth = root.width * 0.6;
+                    roots.push({
+                        x: endX,
+                        y: endY,
+                        length: root.length * 0.6,
+                        angle: root.angle - Math.PI / 8,
+                        width: newWidth,
+                        growth: 0,
+                    });
+                    roots.push({
+                        x: endX,
+                        y: endY,
+                        length: root.length * 0.6,
+                        angle: root.angle + Math.PI / 8,
+                        width: newWidth,
+                        growth: 0,
+                    });
+                }
+            });
+
+            // Update outcome value based on the growth of branches, leaves, and roots
+            outcomeValue = Math.min(outcomeValue + growthSpeed, targetValue);
+
+            // Continue the animation until the target is reached
+            if (outcomeValue < targetValue) {
+                requestAnimationFrame(drawTree);
+            }
+        }
+
+        // Start the animation
+        drawTree();
+    </script>
+
+</body>
+</html>
