@@ -77,19 +77,9 @@
             border-radius: 10px; /* Rounded corners */
         }
 
-        .circle {
-            width: 45%; /* Increased size to make it larger */
-            height: 80%;
-            border-radius: 50%;
-            background-color: lightblue;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
+       
         .rectangle {
-            width: 12%; /* Increased width to make rectangles larger */
+            width: 10%; /* Increased width to make rectangles larger */
             height: 90%; /* Increased height for better visibility */
             background-color: lightgreen;
             position: absolute;
@@ -98,22 +88,26 @@
 
         .top-left {
             top: 5%;
-            left: 2%;
+            left: 23%;
         }
-
+        .top-left-2 {
+            top: 5%;
+            left:0.5%;
+            width:22%;
+        }
         .top-right {
             top: 5%;
-            right: 2%;
+            right: 1%;
         }
 
         .bottom-left {
             top: 5%;
-            left: 15%;
+            left: 34%;
         }
 
         .bottom-right {
             bottom: 5%;
-            right: 15%;
+            right: 12%;
         }
 
         .right {
@@ -281,6 +275,250 @@
                 black 10px
             );
         }
+        /* Thermometer Styles */
+    .thermometer {
+      position: relative;
+      width: 46px;
+      top:15%;
+      left:24%;
+      height: 70%;
+      background: #ccc;
+      border-radius: 25px;
+      border: 3px solid #333;
+    }
+    .thermometer .bulb {
+      position: absolute;
+      bottom: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 40px;
+      background-color: red;
+      border-radius: 50%;
+      border: 5px solid #333;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+    .thermometer .fill {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(to top, red, yellow, green);
+      width: 44px;
+      height: 0;
+      border-radius: 25px;
+      transition: height 3s ease-out;
+    }
+/* Traffic Signal */
+.traffic-signal {
+      width: 45px;
+      height: 70%;
+      position: relative;
+      left:20%;
+      top:17%;
+      background: black;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-around;
+      flex-direction: column;
+      padding: 5px;
+    }
+    .traffic-signal .light {
+      width: 40px;
+      height: 40px;
+      padding-left: 5px;
+      border-radius: 50%;
+      background: grey;
+      transition: background 1s;
+    }
+     /* Rocket Launch */
+     .rocket {
+      position: relative;
+      width: 80px;
+      height: 88%;
+    }
+    .rocket img {
+      position: absolute;
+      bottom: 0;
+      left: 80%;
+
+      transform: translateX(-50%);
+      width: 140px;
+      transition: bottom 3s ease-out;
+    }
+
+    /* Lift Metric Chart */
+    .lift {
+      position: relative;
+      width: 60px;
+      top:15%;
+      left:14%;
+      height: 75%;
+      background: #ccc;
+      border-radius: 5px;
+      border: 3px solid #333;
+    }
+    .lift .elevator {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      background: #333;
+      transition: bottom 3s ease-out;
+    }
+
+    /* Battery Level Chart */
+    .battery {
+      position: relative;
+      width: 60px;
+      top:15%;
+      left:15%;
+      height: 75%;
+      background: gray;
+      border-radius: 8px;
+      border: 3px solid #333;
+    }
+    .battery .cap {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 10px;
+      background-color: #333;
+      border-radius: 3px;
+    }
+    .battery .fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      background: gray;
+      width: 100%;
+      height: 0;
+      border-radius: 8px;
+      transition: height 3s ease-out;
+    }
+    .battery.low .fill {
+      background: red;
+    }
+    .battery.medium .fill {
+      background: yellow;
+    }
+    .battery.high .fill {
+      background: green;
+    }
+
+     /* Target css */
+     .target {
+            position: relative;
+            top:170%;
+            bottom:3px;
+            left:45%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            margin-top: 100px;
+            background-color: red;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .inner-circle {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .circle1 {
+            width: 240px;
+            height: 240px;
+            background-color: white;
+        }
+
+        .circle2 {
+            width: 180px;
+            height: 180px;
+            background-color: red;
+        }
+
+        .circle3 {
+            width: 120px;
+            height: 120px;
+            background-color: white;
+        }
+
+        .circle4 {
+            width: 60px;
+            height: 60px;
+            background-color: red;
+        }
+
+        .circle5 {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: black;
+        }
+
+        .bullet-hole {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: rgb(0, 0, 0);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.5s ease-in-out;
+            clip-path: polygon(
+                50% 0%, 60% 10%, 70% 0%, 80% 15%, 90% 30%, 
+                100% 50%, 85% 60%, 70% 75%, 60% 90%, 50% 100%, 
+                40% 85%, 25% 75%, 10% 60%, 0% 50%, 10% 30%, 25% 15%
+            );
+        }
+
+        .bullet-hole:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 5px solid rgba(0, 0, 0, 0.4);
+            transform: translate(-50%, -50%);
+            clip-path: polygon(
+                50% 0%, 65% 15%, 75% 5%, 90% 20%, 95% 50%, 
+                85% 65%, 75% 80%, 65% 90%, 50% 100%, 35% 85%, 
+                25% 75%, 10% 60%, 5% 50%, 15% 30%, 35% 20%
+            );
+        }
+
+        @keyframes bulletImpact {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        /* tree css */
+        #treeCanvas2{
+          position: relative;
+          left: 45%;
+          top:20%;
+        }
     </style>
 </head>
 <body>
@@ -362,14 +600,57 @@
 
     </div>
                 <div class="middle-bottom">
-                    <div class="circle"></div>
-                    <div class="rectangle top-left"></div>
-                    <div class="rectangle top-right"></div>
-                    <div class="rectangle bottom-left"></div>
-                    <div class="rectangle bottom-right"></div>
+                  
+                    <div class="circle">
+                      <div class="target">
+                        <div class="inner-circle circle1">10</div>
+                        <div class="inner-circle circle2">30</div>
+                        <div class="inner-circle circle3">50</div>
+                        <div class="inner-circle circle4">70</div>
+                        <div class="inner-circle circle5">100</div>
+                        <div class="bullet-hole"></div>
+                    </div>
+                    </div>
+                    <div class="rectangle top-left">
+                      <div class="rec-title">Thermometer</div>
+      <div class="thermometer">
+        <div class="fill" id="thermometerFill"></div>
+        <div class="bulb"></div>
+      </div>
+                    </div>
+                    <div class="rectangle top-left-2">
+                      <div class="chart-title">Growing Tree</div>
+          <canvas id="treeCanvas2" width="250" height="550"></canvas>
+                    </div>
+                    <div class="rectangle top-right">
+                      <div class="rec-title">Battery</div>
+      <div class="battery" id="batteryContainer">
+        <div class="cap"></div>
+        <div class="fill" id="batteryFill"></div>
+      </div>
+                    </div>
+                    <div class="rectangle bottom-left">
+                      <div class="rec-title">Traffic Signal</div>
+      <div class="traffic-signal" id="trafficSignal">
+        <div class="light" id="redLight"></div>
+        <div class="light" id="yellowLight"></div>
+        <div class="light" id="greenLight"></div>
+      </div>
+                    </div>
+                    <div class="rectangle bottom-right">
+                      <div class="rec-title">Lift Metric</div>
+      <div class="lift">
+        <div class="elevator" id="liftElevator"></div>
+      </div>
+                    </div>
                 </div>
             </div>
-            <div class="right"></div>
+            <div class="right">
+              <div class="chart-title">Rocket Launch</div>
+      <div class="rocket">
+        <img src="static\image.png" id="rocketImage" />
+      </div>
+            </div>
         </div>
     </div>
 
@@ -381,12 +662,12 @@
          { outcome: 60, target: 100 },  // Battery
          { outcome: 90, target: 100 },  // Gauge
          { outcome: 40, target: 100 },  // Traffic Signal
-         { outcome: 300, target: 500 }, // Rocket Launch
+         { outcome: 80, target: 100 }, // Rocket Launch
          { outcome: 50, target: 100 },  // Lift Metric
-         { outcome: 10, target: 100 },  // Water Boat
-         { outcome: 40, target: 100 },  // tree chart
-         { outcome: 0, target: 100 },  // target chart
-         { outcome: 60, target: 100 }   // Temperature Dial
+         { outcome: 100, target: 100 },  // Water Boat
+         { outcome: 100, target: 100 },  // tree chart
+         { outcome: 100, target: 100 },  // target chart
+         { outcome: 100, target: 100 }   // Car chart
        ];
    
        // Thermometer Fill
@@ -743,12 +1024,12 @@
    
                // Special case: if outcome equals target, bullet hits dead center
                if (selectedMetric.outcome === selectedMetric.target) {
-                   x = -13;
-                   y = -13;
+                   x = 0;
+                   y = 0;
                    console.log("hi");
                } else {
                    // Otherwise, calculate position based on the percentage
-                   const maxRadius = 150;
+                   const maxRadius = 200;
                    const minRadius = 0;
    
                    // Distance calculation
