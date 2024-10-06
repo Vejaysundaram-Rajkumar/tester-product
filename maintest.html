@@ -9,7 +9,9 @@
             height: 100%;
             margin: 0;
             box-sizing: border-box;
+            
         }
+
 
         .container {
             display: flex;
@@ -41,7 +43,8 @@
         }
 
         .left, .middle {
-            border-radius: 10px; /* Rounded corners for all main sections */
+            border-radius: 10px; 
+            
         }
 
         .left {
@@ -54,18 +57,21 @@
         .left-top, .left-bottom {
             flex: 1;
             border: 1px solid black;
-            border-radius: 10px; /* Rounded corners for internal sections */
+            border-radius: 10px; 
+            
         }
 
         .middle {
             flex: 3;
             display: flex;
             flex-direction: column;
+            
             gap: 10px; /* Gap between top and bottom sections */
         }
 
         .middle-top {
             height: 25%;
+            
             border: 1px solid black;
             border-radius: 10px; /* Rounded corners */
         }
@@ -75,17 +81,28 @@
             position: relative;
             border: 1px solid black;
             border-radius: 10px; /* Rounded corners */
+            background-color: black;
         }
 
        
         .rectangle {
-            width: 10%; /* Increased width to make rectangles larger */
-            height: 90%; /* Increased height for better visibility */
-            background-color: lightgreen;
+            width: 10%; 
+            height: 90%; 
             position: absolute;
-            border-radius: 10px; /* Rounded corners for rectangles */
+            font-size: 15px;
+            overflow: visible;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 10px; 
+            color:white;
         }
 
+        .rectangle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            background-color: rgb(248, 248, 32);
+            color: black;
+        }
         .top-left {
             top: 5%;
             left: 23%;
@@ -146,7 +163,6 @@
 
         /* Water Boat Chart */
         .animation-wrapper {
-            background: #ace5ee;
             position: absolute;
             width: 25%;
             height: 35%;
@@ -316,8 +332,9 @@
       position: relative;
       left:20%;
       top:17%;
-      background: black;
+      background: white;
       border-radius: 10px;
+      border: 3px solid #333;
       display: flex;
       justify-content: space-around;
       flex-direction: column;
@@ -334,8 +351,12 @@
      /* Rocket Launch */
      .rocket {
       position: relative;
-      width: 80px;
-      height: 88%;
+      width: 180px;
+      height: 92%;
+      background-image: url('static/sky.png'); 
+      background-size: cover; 
+      background-position: right; 
+      background-repeat: no-repeat;
     }
     .rocket img {
       position: absolute;
@@ -410,16 +431,19 @@
     }
 
      /* Target css */
-     .target {
+     .rectangle.target {
             position: relative;
-            top:170%;
-            bottom:3px;
-            left:45%;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            margin-top: 100px;
-            background-color: red;
+            left:47%;
+            top:5%;
+            font-size: 15px;
+            overflow: visible;
+            font-weight: bold;
+            text-align: center;
+      
+            width: 250px;
+        }
+        .target {
+            color: black;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -601,8 +625,10 @@
     </div>
                 <div class="middle-bottom">
                   
-                    <div class="circle">
+                    <div class="rectangle target">
+                      <div class="rec-title">Thermometer</div>  
                       <div class="target">
+                       
                         <div class="inner-circle circle1">10</div>
                         <div class="inner-circle circle2">30</div>
                         <div class="inner-circle circle3">50</div>
@@ -619,7 +645,7 @@
       </div>
                     </div>
                     <div class="rectangle top-left-2">
-                      <div class="chart-title">Growing Tree</div>
+                      <div class="rec-title">Growing Tree</div>
           <canvas id="treeCanvas2" width="250" height="550"></canvas>
                     </div>
                     <div class="rectangle top-right">
