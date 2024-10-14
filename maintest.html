@@ -446,12 +446,14 @@
             color: black;
             display: flex;
             justify-content: center;
+            position: relative;
+            right: 18%;
             align-items: center;
         }
 
         .inner-circle {
             position: absolute;
-            border-radius: 50%;
+            border-radius: 90%;
         }
 
         .circle1 {
@@ -684,15 +686,15 @@
         window.onload = function() {
        // Sample data for 10 metrics
        const metrics = [
-         { outcome: 50, target: 100 },  // Thermometer
+         { outcome: 10, target: 100 },  // Thermometer
          { outcome: 60, target: 100 },  // Battery
          { outcome: 90, target: 100 },  // Gauge
-         { outcome: 40, target: 100 },  // Traffic Signal
+         { outcome: 80, target: 100 },  // Traffic Signal
          { outcome: 80, target: 100 }, // Rocket Launch
          { outcome: 50, target: 100 },  // Lift Metric
          { outcome: 100, target: 100 },  // Water Boat
          { outcome: 100, target: 100 },  // tree chart
-         { outcome: 100, target: 100 },  // target chart
+         { outcome: 90, target: 100 },  // target chart
          { outcome: 100, target: 100 }   // Car chart
        ];
    
@@ -1087,7 +1089,7 @@
    
                // Set car's position based on percentage1
                const trackWidth = document.querySelector('.race-container').offsetWidth;
-               const maxPosition = trackWidth - 150; // Account for the width of the car SVG
+               const maxPosition = trackWidth - 250; // Account for the width of the car SVG
                let finalPosition;
    
                // If outcome equals target, set position to finish line
