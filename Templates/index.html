@@ -140,10 +140,17 @@
         }
 
         .selected-metrics-list {
-            list-style: none;
-            padding: 0;
-            overflow-y: auto;
-        }
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    max-height: calc(50vh); /* Adjust height for 10 items */
+    display: grid;
+    grid-template-rows: repeat(10, 1fr); /* Fit exactly 10 rows */
+    gap: 10px;
+}
+
 
         .selected-metric-item.dragging {
             opacity: 0.5;
@@ -270,19 +277,18 @@
             descriptionBox.textContent = 'Hover over a metric to get its description.';
         }
 
-        // Logic to add or remove selected metrics
-        function toggleMetricSelection(metric, metricElement) {
-            if (selectedMetrics.includes(metric)) {
-                removeMetric(metric);
-            } else {
-                if (selectedMetricsCount >= maxMetrics) {
-                    alert("You can select a maximum of " + maxMetrics + " metrics.");
-                    return;
-                }
-                addMetric(metric, metricElement);
-            }
+// Logic to add or remove selected metrics
+function toggleMetricSelection(metric, metricElement) {
+    if (selectedMetrics.includes(metric)) {
+        removeMetric(metric);
+    } else {
+        if (selectedMetricsCount >= maxMetrics) {
+            alert("You can select a maximum of " + maxMetrics + " metrics.");
+            return;
         }
-
+        addMetric(metric, metricElement);
+    }
+}
         function addMetric(metric, metricElement) {
             metricElement.classList.add('selected');
             selectedMetrics.push(metric);
@@ -292,26 +298,44 @@
         }
 
         function removeMetric(metric) {
-            // Find the metric element in the grid based on its text content
-            const gridMetricElements = document.querySelectorAll('.goal-container');
-            gridMetricElements.forEach((element) => {
-                if (element.textContent === metric) {
-                    element.classList.remove('selected');
-                }
-            });
-
-            selectedMetrics = selectedMetrics.filter(m => m !== metric);
-            selectedMetricsCount--;
-
-            // Remove from right-side list
-            const rightMetricItem = document.querySelector(`.selected-metric-item[data-metric="${metric}"]`);
-            if (rightMetricItem) {
-                rightMetricItem.remove();
-            }
-
-            updatePriorities();
-            updateSubmitButtonState();
+    // Find the metric element in the grid based on its text content
+    const gridMetricElements = document.querySelectorAll('.goal-container');
+    gridMetricElements.forEach((element) => {
+        if (element.textContent === metric) {
+            element.classList.remove('selected');
         }
+    });
+
+    selectedMetrics = selectedMetrics.filter(m => m !== metric);
+    selectedMetricsCount--;
+
+    // Remove from right-side list
+    const rightMetricItem = document.querySelector(`.selected-metric-item[data-metric="${metric}"]`);
+    if (rightMetricItem) {
+        rightMetricItem.remove();
+    }
+
+    // Update priorities after removal
+    updatePriorities();
+    updateSubmitButtonState();
+}
+
+// Update the priority numbers and the order of selected metrics
+function updatePriorities() {
+    const selectedMetricsList = document.getElementById('selected-metrics-list');
+    const metricItems = selectedMetricsList.querySelectorAll('.selected-metric-item');
+
+    selectedMetrics = [];  // Resetting the metrics list
+
+    metricItems.forEach((item, index) => {
+        const prioritySpan = item.querySelector('.priority-number');
+        prioritySpan.textContent = index + 1;
+
+        // Update the selectedMetrics array to reflect the new order
+        const metric = item.getAttribute('data-metric');
+        selectedMetrics.push(metric);
+    });
+}
 
         // Add the selected metric to the right side list with drag-and-drop functionality
         function addSelectedMetricToRightList(metric) {
@@ -357,23 +381,6 @@
                 } else {
                     selectedMetricsList.insertBefore(draggingItem, afterElement);
                 }
-            });
-        }
-
-        // Update the priority numbers and the order of selected metrics
-        function updatePriorities() {
-            const selectedMetricsList = document.getElementById('selected-metrics-list');
-            const metricItems = selectedMetricsList.querySelectorAll('.selected-metric-item');
-
-            selectedMetrics = [];  // Resetting the metrics list
-
-            metricItems.forEach((item, index) => {
-                const prioritySpan = item.querySelector('.priority-number');
-                prioritySpan.textContent = index + 1;
-
-                // Update the selectedMetrics array to reflect the new order
-                const metric = item.getAttribute('data-metric');
-                selectedMetrics.push(metric);
             });
         }
 

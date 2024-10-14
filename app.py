@@ -10,7 +10,8 @@ import psutil
 
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
+
 
 
 def force_close_excel():
